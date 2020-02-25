@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Update movie</title>
+</head>
+<body>
+    <header>
+        <h1> Update the movie </h1>
+    </header>
+    <a href ="/movies">Articles</a>
+    <form method="POST" action="/movies/<%=data_movie[0]["id_movie"]%>">
+        <div class="form-group">
+            <label for="movie_name">Movie name</label>
+            <input type="text" class="form-control" id="movie_name" placeholder="Enter movie name" name="movie_name" value="<%=data_movie[0]["name"]%>" required>
+        </div>
+        </div>
+        <div class="form-group">
+            <label for="realisator">Realisator</label>
+            <input type="text" class="form-control" id="realisator" placeholder="Enter realisator" name="realisator" value="<%=data_movie[0]["realisator"]%>" required  >
+        </div>
+        <div class="form-group">
+            <label for="release_year">Release Year</label>
+            <input type="text" class="form-control" id="release_year" placeholder="Enter release year" name="release_year" value="<%=data_movie[0]["release_year"]%>" required  >
+        </div>
+        <div class="form-group">
+            <label for="running_time">Running Time</label>
+            <input type="text" class="form-control" id="running_time" placeholder="Enter running time" name="running_time" value="<%=data_movie[0]["running_time"]%>" required >
+        </div>
+        <div class="form-group">
+            <label for="synopsis">Synopsis</label>
+            <textarea class="form-control" id="synopsis" placeholder="Please write synopsis..." name="synopsis" rows = "10" required ><%=data_movie[0]["synopsis"]%></textarea>
+        </div>
+        <button type="submit" class="btn btn-default">Update</button>
+    </form>
+</body>
+</html>

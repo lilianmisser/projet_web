@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Articles</title>
+</head>
+
+<body>
+    <header>
+        <h1> Articles page </h1>
+    </header>
+    <a href="/home">Accueil</a>
+    <a href="/movies/create">Create article</a>
+    <div>
+        <% if(movies){ %>
+        <table class="table striped">
+            <thead>
+                <tr>
+                    <th>Movie name</th>
+                    <th>Realisator</th>
+                    <th>Release year</th>
+                    <th>
+
+                    </th>
+                    <% if(isAdmin){ %>
+                    <th></th>
+                    <th></th>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(i=0; i<movies.length ; i++){ %>
+                <tr>
+                    <td>
+                        <%= movies[i]["name"] %>
+                    </td>
+                    <td>
+                        <%= movies[i]["realisator"]%>
+                    </td>
+                    <td>
+                        <%= movies[i]["release_year"]%>
+                    </td>
+                    <td>
+                        <a href="/movies/<%=movies[i]["id_movie"]%>">
+                            <button class ="btn btn-warning">
+                                Go to
+                            </button>
+                        </a>
+                    </td>
+                        <% if(isAdmin){ %>
+                    <td>
+                        <a href="/movies/update/<%=movies[i]["id_movie"]%>">
+                            <button class ="btn btn-info">
+                                Update
+                            </button>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="/movies/delete/<%=movies[i]["id_movie"]%>">
+                            <button class ="btn btn-danger">
+                                Delete
+                            </button>
+                        </a>
+                    </td>
+                        <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <% } %>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Register page</title>
+</head>
+<body>
+    <header>
+        <h1> Register page </h1>
+    </header>
+    <form method="POST" action="/users/register">
+        <a href ="/users/login">Login</a>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="firstname">Firstname</label>
+            <input type="text" class="form-control" id="firstname" placeholder="Enter firstname" name="firstname" required>
+        </div>
+        <div class="form-group">
+            <label for="lastname">Lastname</label>
+            <input type="text" class="form-control" id="lastname" placeholder="Enter lastname" name="lastname" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd" required  >
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+</body>
+</html>
