@@ -27,8 +27,11 @@ const movies_model = {
                 if (error) {
                     reject(error);
                 }
-                else {
+                else if(results) {
                     resolve(results);
+                }
+                else{
+                    reject({error: "no correspondance"});
                 }
             })
         })

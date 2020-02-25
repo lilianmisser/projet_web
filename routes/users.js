@@ -5,14 +5,14 @@ const jwt = require("jsonwebtoken");
 const verifyToken = require("../middleware/verifyToken.js");
 
 router.get("/register", (req, res) => {
-    res.render('register');
+    res.render('users/register');
 });
 
 router.post("/register", (req, res) => {
     const err = user_model.check_informations(req.body.username, req.body.firstname, req.body.lastname, req.body.email, req.body.pwd);
     if (err == undefined) {
         user_model.create_user(req.body.username, req.body.firstname, req.body.lastname, req.body.email, req.body.pwd);
-        res.redirect("login");
+        res.redirect("/login");
     }
     else {
         res.send(err);
@@ -20,7 +20,7 @@ router.post("/register", (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-    res.render('login');
+    res.render('users/login');
 })
 
 router.post("/login", async (req, res) => {

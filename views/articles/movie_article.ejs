@@ -1,0 +1,46 @@
+    <!DOCTYPE html>
+<html>
+<head>
+    <%-include("../header")-%>
+    <title> <%= data_movie[0]["name"] %> </title>
+</head>
+<body>
+    <header>
+        <h1> <%= data_movie[0]["name"] %> </h1>
+    </header>
+    <a href="/movies">Articles</a>
+    <div class="container-fluid">
+        <%= data_movie[0]["synopsis"]%>
+    </div>
+    <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
+        <div class="form-group">
+            <label for="comment">Comment</label>
+            <textarea class="form-control" id="comment" placeholder="Please write your comment..." name="comment" rows = "4" required ></textarea>
+        </div>
+        <button type="submit" class="btn btn-default">Send</button>
+    </form>
+    <div>
+        <% if(comments){ %>
+        <table class="table striped">
+            <thead>
+                <tr>
+                    <th>Content</th>
+                    <th>Comment Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(i=0; i<comments.length ; i++){ %>
+                <tr>
+                    <td>
+                        <%= movies[i]["content"] %>
+                    </td>
+                    <td>
+                        <%= movies[i]["post_date"]%>
+                    </td>
+                <% } %>
+            </tbody>
+        </table>
+        <% } %>
+    </div>
+</body>
+</html>
