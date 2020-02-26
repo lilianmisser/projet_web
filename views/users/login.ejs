@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <%-include(../header)-%>
+    <%-include("../header")-%>
     <title>Login page</title>
 </head>
 <body>
     <header>
         <h1> Login page </h1>
     </header>
+    <% if(error){ %>
+        <div class="alert alert-danger" role="alert">
+            <%= error %>
+        </div>
+    <% } %>
     <form method="POST" action="/users/login">
         <a href ="/users/register">Register</a>
         <div class="form-group">

@@ -26,16 +26,20 @@
                 <tr>
                     <th>Content</th>
                     <th>Comment Date</th>
+                    <th>Username</th>
                 </tr>
             </thead>
             <tbody>
                 <% for(i=0; i<comments.length ; i++){ %>
                 <tr>
                     <td>
-                        <%= movies[i]["content"] %>
+                        <%= comments[i]["content"] %>
                     </td>
                     <td>
-                        <%= movies[i]["post_date"]%>
+                        <%= comments[i]["post_date"]%>
+                    </td>
+                    <td>
+                        <%= usernames[i]%>
                     </td>
                 <% } %>
             </tbody>

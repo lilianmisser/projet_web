@@ -29,7 +29,9 @@ const user_model = {
 
     create_user: (username, firstname, lastname, email, password) => {
         bdd.query("INSERT INTO user SET ?", { username: username, firstname: firstname, lastname: lastname, mail: email, password: user_model.hash_pass(password) }, function (error, results, fields) {
-            if (error) throw error;
+            if (error){
+                return {error : "username or mail already used"};
+            }
             console.log("new user");
         });
     },
@@ -38,19 +40,33 @@ const user_model = {
         return new Promise((resolve, reject) => {
             bdd.query("SELECT id_user,password,isAdmin FROM user WHERE user.username = ?", [username], function (error, results, fields) {
                 if (error) {
-                    reject(error);
-                } else if (results == undefined) {
-                    console.log("no user correspondance");
+                    reject({error: "query failed"});
+                } else if (results[0] == undefined) {
                     reject({error : "no user correspondance"});
                 } else if (passwordHash.verify(password, results[0]["password"])) {
-                    console.log("user found !!");
                     resolve({user : [username, results[0]["id_user"],results[0]["isAdmin"]]});
                 } else {
-                    console.log("user not found :(");
                     reject({error : "wrong password"});
                 }
             })
-        });
+        })
+    },
+
+    get_username : async (id_user) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT username FROM user WHERE user.id_user = ?", [id_user], function(error,results,fields) {
+                console.log(results);
+                if(error) {
+                    reject(error);
+                }
+                else if (results) {
+                    resolve(results);
+                }
+                else{
+                    reject({error : "no id correspondance"});
+                }
+            })
+        })
     }
 };
 

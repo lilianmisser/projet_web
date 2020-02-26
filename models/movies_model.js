@@ -13,21 +13,21 @@ const movies_model = {
         return new Promise((resolve, reject) => {
             bdd.query("SELECT * FROM movies", function (error, results, fields) {
                 if (error) {
-                    reject(error);
+                    reject({error:"query failed"});
                 }
                 else {
-                    resolve(results);
+                    resolve({results: results});
                 }
             })
-        });
+        })
     },
     load_movie: async (id_movie) => {
         return new Promise((resolve, reject) => {
             bdd.query("SELECT * FROM movies WHERE movies.id_movie = ?", id_movie, (error, results, fields) => {
                 if (error) {
-                    reject(error);
+                    reject({error : "query failed"});
                 }
-                else if(results) {
+                else if(results !== []){
                     resolve(results);
                 }
                 else{
