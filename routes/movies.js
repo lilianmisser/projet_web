@@ -85,10 +85,8 @@ router.get("/:id", verifyToken, async (req, res) => {
     else {
         try {
             let data_movie = await movies_model.load_movie(req.params.id);
-            console.log(data_movie);
             try {
                 let comments = await comment_model.all_comment(+(req.params.id));
-                console.log("received");
                 let usernames = [];
                 let username;
                 for (let i = 0; i < comments.length; i++) {

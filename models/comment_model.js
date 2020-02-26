@@ -21,7 +21,6 @@ const comment_model = {
                     reject(error);
                 }
                 else if (results){
-                    console.log("comments");
                     resolve(results);
                 }
                 else{

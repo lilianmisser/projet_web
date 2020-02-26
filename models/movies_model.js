@@ -50,6 +50,39 @@ const movies_model = {
             if (error) throw error;
             console.log("Movie updated");
         })
+    },
+
+    already_rated : async (id_movie,id_user)=>{
+        return new Promise((resolve,reject) =>{
+            bdd.query("SELECT mark FROM movie_mark WHERE movie_mark.id_movie = ? AND movie_mark.id_user = ?",[id_movie,id_user],
+            (error,results) => {
+                if(error){
+                    reject(error);
+                }
+                else if(results == []){
+                    resolve(false);
+                }
+                else{
+                    resolve(true);
+                }
+            })
+        })
+    },
+
+    rate_movie: (id_user,id_movie,mark) => {
+        bdd.query("INSERT INTO movie_mark SET ?", {mark:mark,id_user:id_user,id_movie:id_movie},
+        (error,results) =>{
+            if (error) throw error;
+            console.log("mark added to db");
+        })
+    },
+
+    update_rate_movie : (id_user,id_movie,mark) =>{
+        bdd.query("UPDATE movie_mark SET ? WHERE movie_mark.id_user = ? AND movie_mark.id_movie = ?",[{mark:mark},id_user,id_movie],
+        (error,results) =>{
+            if(error) throw error;
+            console.log("mark has been updated");
+        })
     }
 }
 
