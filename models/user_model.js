@@ -2,9 +2,23 @@ var passwordHash = require('password-hash');
 const bdd = require("./bdd");
 const regex_mail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
+const Errors = {
+    DB_UNAVALAIBLE : new Error("Internal Server Error"),
+    USERNAME_ALREADY_EXISTS : new Error("This username already exists, please change"),
+    MAIL_ALREADY_EXISTS : new Error("This mail already exists, please change"),
+    NO_USER_CORRESPONDANCE : new Error("This username doesn't have an account"),
+    WRONG_PASS : new Error("Wrong password")
+    
+}
+
+
 const user_model = {
     hash_pass: (password) => {
         return passwordHash.generate(password);
+    },
+
+    verify_pass : (post_pass,db_pass) => {
+        return passwordHash.verify(post_pass,db_pass);
     },
 
     check_informations: (username, firstname, lastname, email, password) => {
@@ -28,25 +42,42 @@ const user_model = {
     },
 
     create_user: (username, firstname, lastname, email, password) => {
-        bdd.query("INSERT INTO user SET ?", { username: username, firstname: firstname, lastname: lastname, mail: email, password: user_model.hash_pass(password) }, function (error, results, fields) {
-            if (error){
-                return {error : "username or mail already used"};
-            }
-            console.log("new user");
-        });
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT username FROM user WHERE user.username = ?",username,
+            (error,results) =>{
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else if(results !== []){
+                    reject(Errors.USERNAME_ALREADY_EXISTS);
+                }
+                else{
+                    bdd.query("INSERT INTO user SET ?", { username: username, firstname: firstname, lastname: lastname, mail: email, password: user_model.hash_pass(password) },
+                    (error, results) => {
+                        if (error){
+                            reject(Errors.MAIL_ALREADY_EXISTS);
+                        }
+                        else{
+                            resolve();
+                        }
+                    });
+                }
+            })
+        })
     },
 
     find_user: async (username, password) => {
         return new Promise((resolve, reject) => {
-            bdd.query("SELECT id_user,password,isAdmin FROM user WHERE user.username = ?", [username], function (error, results, fields) {
+            bdd.query("SELECT id_user,password,isAdmin FROM user WHERE user.username = ?", [username],
+            (error, results) => {
                 if (error) {
-                    reject({error: "query failed"});
+                    reject(Errors.DB_UNAVALAIBLE);
                 } else if (results[0] == undefined) {
-                    reject({error : "no user correspondance"});
-                } else if (passwordHash.verify(password, results[0]["password"])) {
+                    reject(Errors.NO_USER_CORRESPONDANCE);
+                } else if ( user_model.verify_pass(password, results[0]["password"])) {
                     resolve({user : [username, results[0]["id_user"],results[0]["isAdmin"]]});
                 } else {
-                    reject({error : "wrong password"});
+                    reject(Errors.WRONG_PASS);
                 }
             })
         })
@@ -54,16 +85,16 @@ const user_model = {
 
     get_username : async (id_user) => {
         return new Promise((resolve,reject) => {
-            bdd.query("SELECT username FROM user WHERE user.id_user = ?", [id_user], function(error,results,fields) {
-                console.log(results);
+            bdd.query("SELECT username FROM user WHERE user.id_user = ?", [id_user],
+            (error,results) =>{
                 if(error) {
-                    reject(error);
+                    reject(Errors.DB_UNAVALAIBLE);
                 }
                 else if (results) {
                     resolve(results);
                 }
                 else{
-                    reject({error : "no id correspondance"});
+                    reject(Errors.NO_USER_CORRESPONDANCE);
                 }
             })
         })

@@ -2,7 +2,7 @@ const isAdmin = (req, res, next) => {
     if (req.user.isAdmin) {
         next();
     } else {
-        res.redirect("/home");
+        res.status(403).render("accueil");
     }
 };
 
