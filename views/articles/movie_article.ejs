@@ -12,14 +12,6 @@
     <div class="container-fluid">
         <%= data_movie[0]["synopsis"]%>
     </div>
-    <br>
-    <div class = "container-fluid">
-        <% if(average_mark){ %>
-        <p> Average mark : <%= average_mark %></p>
-        <% }else{ %>
-        <p> Aucune note</p>
-        <% } %>
-    </div>
     <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
         <div class="form-group">
             <label for="comment">Comment</label>
@@ -27,6 +19,14 @@
         </div>
         <button type="submit" class="btn btn-info">Send</button>
     </form>
+    <br>
+    <div class = "container-fluid">
+        <% if(average_mark){ %>
+        <p>Average mark of this movie : <%=average_mark%></p>
+        <% }else{ %>
+        <p>No mark atm give us one !</p>
+        <% } %>
+    </div>
     <div class = "container-fluid">
         <form method = "POST" action= "/movies/rate/<%=data_movie[0]["id_movie"]%>">
             <div class="form-group">
