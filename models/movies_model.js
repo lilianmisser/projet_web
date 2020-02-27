@@ -84,7 +84,7 @@ const movies_model = {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }
-                else if(results == []){
+                else if(results[0] == undefined){
                     resolve(false);
                 }
                 else{
@@ -96,7 +96,7 @@ const movies_model = {
 
     rate_movie: (id_user,id_movie,mark) => {
         return new Promise((resolve,reject) => {
-            bdd.query("INSERT INTO movie_mark SET ?", {mark:mark,id_user:id_user,id_movie:id_movie},
+            bdd.query("INSERT INTO movie_mark SET ?", {mark: mark , id_user: id_user,id_movie: id_movie},
             (error,results) =>{
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
@@ -117,6 +117,23 @@ const movies_model = {
                 }
                 else{
                     resolve();
+                }
+            })
+        })
+    },
+
+    get_movie_rate : async (id_movie) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT SUM(mark) as sum,COUNT(mark) as count FROM `movie_mark` WHERE id_movie = ?",[id_movie],
+            (error,results) =>{
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else if(results[0] == undefined){
+                    resolve(undefined);
+                }
+                else{
+                    resolve(results[0]["sum"] / results[0]["count"]);
                 }
             })
         })

@@ -94,13 +94,41 @@ router.post("/comments/:id", verifyToken, (req, res) => {
     }
 })
 
+router.post("/rate/:id", verifyToken, async (req,res) => {
+    if (isNaN(req.params.id)){
+        res.redirect("/movies");
+    }
+    else{
+        if(req.body.mark == "0" || req.body.mark == "1" || req.body.mark == "2" || req.body.mark == "3" || req.body.mark == "4" ||req.body.mark == "5"){
+            try{
+                let already_rated = await movies_model.already_rated(+req.params.id,req.user.user_id);
+                console.log(already_rated);
+                if(already_rated){
+                    movies_model.update_rate_movie(req.user.user_id,+req.params.id,+req.body.mark);
+                    res.redirect("/movies/" + req.params.id);
+                }else{
+                    movies_model.rate_movie(req.user.user_id,+req.params.id,+req.body.mark);
+                    res.redirect("/movies/" + req.params.id);
+                }
+            }
+            catch{
+                res.status(503);
+            }
+        }
+        else{
+            res.redirect("/movies/" + req.params.id)
+        }
+    }
+})
+
 router.get("/:id", verifyToken, async (req, res) => {
     if (isNaN(req.params.id)) {
         res.redirect("/movies");
     }
     else {
         try {
-            let data_movie = await movies_model.load_movie(req.params.id);
+            let data_movie = await movies_model.load_movie(+(req.params.id));
+            let average_mark = await movies_model.get_movie_rate(+(req.params.id));
             try {
                 let comments = await comment_model.all_comment(+(req.params.id));
                 let usernames = [];
@@ -109,9 +137,9 @@ router.get("/:id", verifyToken, async (req, res) => {
                     username = await user_model.get_username(comments[i]["id_user"]);
                     usernames.push(username[0].username);
                 }
-                res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames });
+                res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames ,average_mark : average_mark});
             } catch (error) {
-                res.render("articles/movie_article", { data_movie: data_movie, comments: undefined });
+                res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, average_mark : average_mark });
             }
         }
         catch (error) {

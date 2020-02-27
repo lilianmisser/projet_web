@@ -34,6 +34,20 @@ const comment_model = {
                 }
             })
         })
+    },
+    
+    delete_comment: (id_comment) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("DELETE FROM comment WHERE comment.id_comment = ?", id_comment,
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve();
+                }
+            })
+        })
     }
 }
 
