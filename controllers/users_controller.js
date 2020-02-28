@@ -1,24 +1,25 @@
 const user_model = require("../models/user_model");
 const jwt = require("jsonwebtoken");
+const Errors = require("../models/errors");
 
 exports.get_register_page = (req, res) => {
     res.render('users/register', { error: undefined });
 };
 
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
     let err = user_model.check_informations(req.body.username, req.body.firstname, req.body.lastname, req.body.email, req.body.pwd);
     if(err == undefined){
         try{
-            user_model.create_user(req.body.username, req.body.firstname, req.body.lastname, req.body.email, req.body.pwd);
-            res.redirect("/login");
+            await user_model.create_user(req.body.username, req.body.firstname, req.body.lastname, req.body.email, req.body.pwd);
+            res.redirect("/users/login");
         }
         catch(error){
             switch(error){
-                case user_model.Errors.DB_UNAVAILABLE :
+                case Errors.DB_UNAVAILABLE :
                     res.status(503);
-                case user_model.Errors.USERNAME_ALREADY_EXISTS :
+                case Errors.USERNAME_ALREADY_EXISTS :
                     res.render("users/register", { error: error.message });;
-                case user_model.Errors.MAIL_ALREADY_EXISTS :
+                case Errors.MAIL_ALREADY_EXISTS :
                     res.render("users/register", { error: error.message });;
             }
         }

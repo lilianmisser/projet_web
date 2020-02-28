@@ -1,6 +1,8 @@
 const movies_model = require("../models/movies_model");
 const comment_model = require("../models/comment_model");
 const user_model = require("../models/user_model");
+const Errors = require("../models/errors");
+
 
 exports.show_all =  async (req, res) => {
     try {
@@ -13,19 +15,25 @@ exports.show_all =  async (req, res) => {
 };
 
 exports.get_creation_page = (req, res) => {
-    res.render('articles/create_article');
+    res.render('articles/create_article',{error : undefined});
 };
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     if (isNaN(req.body.release_year) || isNaN(req.body.running_time)) {
-        res.redirect("/movies");
+        res.render("articles/create_article",{error : "Release year and running time have to be numbers"});
     }
     else {
         try{
-            movies_model.insert_movie(req.body.movie_name, req.body.realisator, req.body.release_year, req.body.running_time, req.body.synopsis, req.user.user_id); 
+            await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis, req.user.user_id);
+            res.redirect("/movies");
         }
         catch(error){
-            res.status(503);
+            switch(error){
+                case Errors.DB_UNAVAILABLE:
+                res.status(503);
+                case Errors.MOVIE_NAME_TAKEN:
+                res.render("articles/create_article",{ error : error.message});
+            }
         }
     }
 };
@@ -41,9 +49,9 @@ exports.get_update_page = async (req, res) => {
         }
         catch (error) {
             switch(error){
-                case movies_model.Errors.DB_UNAVAILABLE:   
+                case Errors.DB_UNAVAILABLE:   
                     res.status(503);
-                case movies_model.Errors.NO_MOVIE_CORRESPONDANCE:
+                case Errors.NO_MOVIE_CORRESPONDANCE:
                     res.status(400).render("articles/articles");
             }
         }
@@ -73,13 +81,16 @@ exports.add_comment = (req, res) => {
     else {
         //maybe not let an user add comment before 10min
         try{
-            comment_model.insert_comment(req.body.comment, today, req.user.user_id, parseInt(req.params.id));
-
             let today = new Date();
+            let mi = String(today.getMinutes()).padStart(2, '0');;
+            let hh = String(today.getHours()).padStart(2, '0');;
             let dd = String(today.getDate()).padStart(2, '0');
-            let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            let mm = String(today.getMonth() + 1).padStart(2, '0');
             let yyyy = today.getFullYear();
-            today = yyyy + '/' + mm + '/' + dd;
+
+            today = dd + '/' + mm + '/' + yyyy  + " " + hh + ":" + mi;
+
+            comment_model.insert_comment(req.body.comment, today, req.user.user_id, +req.params.id);
         
             res.redirect("/movies/" + req.params.id); 
         }
@@ -139,9 +150,9 @@ exports.get_by_id = async (req, res) => {
         }
         catch (error) {
             switch(error){
-                case movies_model.Errors.DB_UNAVAILABLE:   
+                case Errors.DB_UNAVAILABLE:   
                     res.status(503);
-                case movies_model.Errors.NO_MOVIE_CORRESPONDANCE:
+                case Errors.NO_MOVIE_CORRESPONDANCE:
                     res.status(400).render("articles/articles");
             }
         }

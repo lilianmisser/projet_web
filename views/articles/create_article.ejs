@@ -8,6 +8,11 @@
     <header>
         <h1> Create an article </h1>
     </header>
+    <% if(error){ %>
+        <div class="alert alert-danger" role="alert">
+            <%= error %>
+        </div>
+    <% } %>
     <a href ="/movies">Articles</a>
     <form method="POST" action="/movies">
         <div class="form-group">

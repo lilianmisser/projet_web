@@ -1,15 +1,7 @@
 var passwordHash = require('password-hash');
 const bdd = require("./bdd");
 const regex_mail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-const Errors = {
-    DB_UNAVALAIBLE : new Error("Internal Server Error"),
-    USERNAME_ALREADY_EXISTS : new Error("This username already exists, please change"),
-    MAIL_ALREADY_EXISTS : new Error("This mail already exists, please change"),
-    NO_USER_CORRESPONDANCE : new Error("This username doesn't have an account"),
-    WRONG_PASS : new Error("Wrong password")
-    
-}
+const Errors = require("./errors");
 
 
 const user_model = {
@@ -41,7 +33,7 @@ const user_model = {
         return err;
     },
 
-    create_user: (username, firstname, lastname, email, password) => {
+    create_user: async (username, firstname, lastname, email, password) => {
         return new Promise((resolve,reject) => {
             bdd.query("SELECT username FROM user WHERE user.username = ?",username,
             (error,results) =>{

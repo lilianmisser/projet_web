@@ -1,14 +1,12 @@
 const bdd = require("./bdd");
-
-const Errors = {
-    DB_UNAVALAIBLE : new Error("Internal Server Error")
-}
+const Errors = require("./errors");
 
 const comment_model = {
     insert_comment: (comment, post_date, id_user, id_movie) => {
         return new Promise ((resolve,reject) => {
             bdd.query("INSERT INTO comment SET ?", { content: comment, post_date: post_date, id_user: id_user, id_movie: id_movie },
             (error, results) => {
+                console.log(error);
                 if (error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }

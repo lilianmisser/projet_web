@@ -1,21 +1,28 @@
 const bdd = require("./bdd");
-
-const Errors = {
-    DB_UNAVALAIBLE : new Error("Internal Server Error"),
-    NO_MOVIE_CORRESPONDANCE : new Error("This movie doesnt exist")
-}
+const Errors = require("./errors");
 
 const movies_model = {
-    insert_movie: (movie_name, realisator, release_year, running_time, synopsis, creator) => {
+    insert_movie: async (movie_name, realisator, release_year, running_time, synopsis, creator) => {
         return new Promise((resolve,reject) => {
-            bdd.query("INSERT INTO movies SET ?",
-            { name: movie_name, realisator: realisator, release_year: parseInt(release_year), running_time: parseInt(running_time), synopsis: synopsis, id_user: creator },
-            (error, results) => {
-                if (error){
-                    reject(Errors.DB_UNAVAILABLE);
+            bdd.query("SELECT name FROM movies WHERE movies.name = ?",movie_name,
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else if (results[0] !== undefined){
+                    reject(Errors.MOVIE_NAME_TAKEN);
                 }
                 else{
-                    resolve();
+                    bdd.query("INSERT INTO movies SET ?",
+                    { name: movie_name, realisator: realisator, release_year: release_year, running_time: running_time, synopsis: synopsis, id_user: creator },
+                    (error, results) => {
+                        if (error){
+                            reject(Errors.DB_UNAVAILABLE);
+                        }
+                        else{
+                            resolve();
+                        }
+                    })
                 }
             })
         })
