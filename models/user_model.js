@@ -40,19 +40,30 @@ const user_model = {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }
-                else if(results !== []){
+                else if(results[0] !== undefined){
                     reject(Errors.USERNAME_ALREADY_EXISTS);
                 }
                 else{
-                    bdd.query("INSERT INTO user SET ?", { username: username, firstname: firstname, lastname: lastname, mail: email, password: user_model.hash_pass(password) },
-                    (error, results) => {
-                        if (error){
+                    bdd.query("SELECT mail FROM user WHERE user.mail = ?",email,
+                    (err,results) =>{
+                        if(error){
+                            reject(Errors.DB_UNAVALAIBLE);
+                        }
+                        else if(results[0] !== undefined){
                             reject(Errors.MAIL_ALREADY_EXISTS);
                         }
                         else{
-                            resolve();
+                            bdd.query("INSERT INTO user SET ?", { username: username, firstname: firstname, lastname: lastname, mail: email, password: user_model.hash_pass(password) },
+                            (error, results) => {
+                                if (error){
+                                    reject(Errors.MAIL_ALREADY_EXISTS);
+                                }
+                                else{
+                                    resolve();
+                                }
+                            })
                         }
-                    });
+                    })
                 }
             })
         })

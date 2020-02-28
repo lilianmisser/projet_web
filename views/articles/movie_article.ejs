@@ -12,6 +12,8 @@
     <div class="container-fluid">
         <%= data_movie[0]["synopsis"]%>
     </div>
+    
+    <% if(canComment){ %>
     <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
         <div class="form-group">
             <label for="comment">Comment</label>
@@ -19,7 +21,13 @@
         </div>
         <button type="submit" class="btn btn-info">Send</button>
     </form>
+    <% }else{ %>
+    <div class="alert alert-warning" role="alert">
+        You need to wait 10mins from the time u commented to comment again
+    </div>
+    <% } %>
     <br>
+    
     <div class = "container-fluid">
         <% if(average_mark){ %>
         <p>Average mark of this movie : <%=average_mark%></p>

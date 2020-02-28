@@ -6,7 +6,7 @@ const login_access = (req, res, next) => {
         jwt.verify(token.split("=")[1], "secret", (err, user) => {
             //error means that my user is not logged in
             if (err){
-                res.render("users/login",{error: undefined});
+                res.clearCookie("jwt");
                 next();
             }
             //user can't access login page if hes logged
@@ -15,6 +15,7 @@ const login_access = (req, res, next) => {
             }
         });
     } else {
+        res.clearCookie("jwt");
         next();
     }
 };

@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
         }
     }
     else{
-        res.render("users/register", { error: err })
+        res.render("users/register", { error: err });
     }
 };
 
