@@ -4,6 +4,7 @@ const verifyToken = require("../middleware/verifyToken");
 const isAdmin = require("../middleware/isAdmin");
 const movies = require("../controllers/movies_controller");
 
+
 router.get("/", verifyToken, movies.show_all);
 
 router.get("/create", verifyToken, isAdmin, movies.get_creation_page);

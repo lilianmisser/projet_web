@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <%-include("../header")-%>
@@ -10,9 +10,11 @@
     </header>
     <a href="/movies">Articles</a>
     <div class="container-fluid">
-        <%= data_movie[0]["synopsis"]%>
+        Synopsis : <%= data_movie[0]["synopsis"]%>
     </div>
-    
+    <br>
+    <img src=<%=image_path%> alt="Movie poster">
+    <br>
     <% if(canComment == true){ %>
     <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
         <div class="form-group">

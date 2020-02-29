@@ -56,7 +56,7 @@ const movies_model = {
             })
         })
     },
-    delete_movie: (id_movie) => {
+    delete_movie: async (id_movie) => {
         return new Promise((resolve,reject) => {
             bdd.query("DELETE FROM movies WHERE movies.id_movie = ?", id_movie, 
             (error, results) => {
@@ -121,6 +121,23 @@ const movies_model = {
             (error,results) =>{
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve();
+                }
+            })
+        })
+    },
+
+    get_movie_name : async (id_movie) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT name FROM movies WHERE movies.id_movie = ?",[id_movie],
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else if(results[0] !== undefined){
+                    resolve(results[0]["name"]);
                 }
                 else{
                     resolve();

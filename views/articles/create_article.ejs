@@ -14,7 +14,7 @@
         </div>
     <% } %>
     <a href ="/movies">Articles</a>
-    <form method="POST" action="/movies">
+    <form method="POST" enctype="multipart/form-data" action="/movies">
         <div class="form-group">
             <label for="movie_name">Movie name</label>
             <input type="text" class="form-control" id="movie_name" placeholder="Enter movie name" name="movie_name" required>
@@ -35,6 +35,10 @@
         <div class="form-group">
             <label for="synopsis">Synopsis</label>
             <textarea class="form-control" id="synopsis" placeholder="Please write synopsis..." name="synopsis" rows = "10" required ></textarea>
+        </div>
+        <div class="form-group">
+            <label for="movie_image">Input movie overview</label>
+            <input type="file" class="form-control-file" id="movie_image" name="movie_image">
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
     </form>

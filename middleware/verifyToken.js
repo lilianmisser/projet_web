@@ -10,7 +10,7 @@ const verifyToken = (req, res, next) => {
 
         });
     } else {
-        return res.render("users/login");
+        return res.render("users/login",{error : undefined});
     }
 };
 
