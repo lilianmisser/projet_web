@@ -93,13 +93,28 @@ exports.add_comment = async (req, res) => {
             today = yyyy + '-' + mm + '-' + dd + " " + hh + ":" + mi + ":" + ss;
 
             await comment_model.insert_comment(req.body.comment, today, req.user.user_id, +req.params.id);
-            res.redirect("/movies/" + req.params.id );
+            res.redirect("/movies/" + req.params.id);
         }
         catch{
             res.status(503);
         }
     }
 };
+
+exports.delete_comment = async (req,res) => {
+    if (isNaN(req.params.id)) {
+        res.redirect("/movies");
+    }
+    else{
+        try{
+            await comment_model.delete_comment(+req.params.id);
+            res.redirect("/movies");
+        }
+        catch{
+            res.status(503);
+        }
+    }
+}
 
 exports.rate = async (req, res) => {
     if (isNaN(req.params.id)) {
@@ -133,44 +148,61 @@ exports.get_by_id = async (req, res) => {
     }
     else {
         try {
-            console.log("test");
             let data_movie = await movies_model.load_movie(+(req.params.id));
-            let average_mark = await movies_model.get_movie_rate(+(req.params.id));
             try {
-                let canComment = await comment_model.canComment(req.user.user_id, +req.params.id);
-                console.log(canComment);
+                let average_mark = await movies_model.get_movie_rate(+(req.params.id));
                 try {
-                    console.log("test2");
-                    let comments = await comment_model.all_comment(+(req.params.id));
-                    let usernames = [];
-                    let username;
-                    for (let i = 0; i < comments.length; i++) {
-                        comments[i]["post_date"] = moment(comments[i]["post_date"]).fromNow();
-                        username = await user_model.get_username(comments[i]["id_user"]);
-                        usernames.push(username[0].username);
-                    }
-                    if (canComment) {
-                        console.log("test3");
-                        res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment });
-                    }
-                    else {
-                        console.log("test4");
-                        res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment });
-                    }
+                    let canComment = await comment_model.canComment(req.user.user_id, +req.params.id);
+                    try {
+                        let comments = await comment_model.all_comment(+(req.params.id));
+                        let usernames = [];
+                        let username;
+                        for (let i = 0; i < comments.length; i++) {
+                            comments[i]["post_date"] = moment(comments[i]["post_date"]).fromNow();
+                            username = await user_model.get_username(comments[i]["id_user"]);
+                            usernames.push(username[0].username);
+                        }
+                        if (canComment == true) {
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment , username : req.user.username , isAdmin : req.user.isAdmin});
+                        }
+                        else {
+                            let now = new Date(Date.now());
+                            let last_comment = new Date(canComment);
+                            let minutes_to_comment = last_comment.getMinutes() + 10 - now.getMinutes();
+                            let seconds_to_comment = last_comment.getSeconds() - now.getSeconds();
+                            if(seconds_to_comment < 0){
+                                seconds_to_comment += 60;
+                                minutes_to_comment -= 1;
+                            }
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: {minutes_left : minutes_to_comment,seconds_left : seconds_to_comment} , username : req.user.username , isAdmin : req.user.isAdmin });
+                        }
 
-                } catch (error) {
-                    console.log("test5");
-                    res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames : undefined, average_mark: average_mark, canComment: canComment });
+                    } catch (error) {
+                        if(canComment == true){
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment , username : req.user.username , isAdmin : req.user.isAdmin});
+                        }
+                        else{
+                            let now = new Date(Date.now());
+                            let last_comment = new Date(canComment);
+                            let minutes_to_comment = last_comment.getMinutes() + 10 - now.getMinutes();
+                            let seconds_to_comment = last_comment.getSeconds() - now.getSeconds();
+                            if(seconds_to_comment < 0){
+                                seconds_to_comment += 60;
+                                minutes_to_comment -= 1;
+                            }
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: {minutes_left : minutes_to_comment,seconds_left : seconds_to_comment} , username : req.user.username , isAdmin : req.user.isAdmin });
+                        }
+                    }
                 }
-
+                catch{
+                    res.status(503);
+                }
             }
             catch{
-                console.log("test6");
                 res.status(503);
             }
         }
         catch (error) {
-            console.log("test");
             switch (error) {
                 case Errors.DB_UNAVAILABLE:
                     res.status(503);

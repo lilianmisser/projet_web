@@ -14,6 +14,8 @@ router.get("/update/:id", verifyToken, isAdmin, movies.get_update_page);
 
 router.get("/delete/:id", verifyToken, isAdmin, movies.delete_by_id);
 
+router.get("/comments/delete/:id" , verifyToken , movies.delete_comment);
+
 router.post("/comments/:id", verifyToken, movies.add_comment);
 
 router.post("/rate/:id", verifyToken, movies.rate);

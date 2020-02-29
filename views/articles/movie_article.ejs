@@ -13,7 +13,7 @@
         <%= data_movie[0]["synopsis"]%>
     </div>
     
-    <% if(canComment){ %>
+    <% if(canComment == true){ %>
     <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
         <div class="form-group">
             <label for="comment">Comment</label>
@@ -23,7 +23,7 @@
     </form>
     <% }else{ %>
     <div class="alert alert-warning" role="alert">
-        You need to wait 10mins from the time u commented to comment again
+        You need to wait <%= canComment.minutes_left %> minutes and <%= canComment.seconds_left %> seconds to post a new comment
     </div>
     <% } %>
     <br>
@@ -59,6 +59,7 @@
                     <th>Content</th>
                     <th>Comment Date</th>
                     <th>Username</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -73,7 +74,18 @@
                     <td>
                         <%= usernames[i]%>
                     </td>
+                
+                    <% if(username == usernames[i] || isAdmin) { %>
+                    <td>
+                        <a href="/movies/comments/delete/<%=comments[i]["id_comment"]%>">
+                            <button class ="btn btn-danger">
+                                Delete
+                            </button>
+                        </a>
+                    </td>
+                    <% } %>
                 <% } %>
+                </tr>
             </tbody>
         </table>
         <% } %>

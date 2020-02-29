@@ -50,15 +50,14 @@ const comment_model = {
     //user can't comment the same movie until waiting a certain amount of time
     canComment : async (id_user,id_movie) => {
         return new Promise((resolve,reject) => {
-            bdd.query("SELECT * FROM comment WHERE comment.id_user = ? AND comment.id_movie = ? AND DATEDIFF(comment.post_date,CURRENT_TIMESTAMP()) = 0 AND TIMEDIFF(CURRENT_TIMESTAMP(),comment.post_date) < '00:10' ",
+            bdd.query("SELECT post_date FROM comment WHERE comment.id_user = ? AND comment.id_movie = ? AND DATEDIFF(comment.post_date,CURRENT_TIMESTAMP()) = 0 AND TIMEDIFF(CURRENT_TIMESTAMP(),comment.post_date) < '00:10' ",
             [id_user,id_movie],
             (error,results) => {
                 if(error){
-                    console.log(error);
                     reject(Errors.DB_UNAVALAIBLE);
                 }
                 else if(results[0] !== undefined){
-                    resolve(false);
+                    resolve(results[0].post_date);
                 }
                 else{
                     resolve(true);

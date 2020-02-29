@@ -47,7 +47,7 @@ const movies_model = {
                 if (error) {
                     reject(Errors.DB_UNAVAILABLE);
                 }
-                else if(results !== []){
+                else if(results[0] !== undefined){
                     resolve(results);
                 }
                 else{
@@ -140,7 +140,8 @@ const movies_model = {
                     resolve(undefined);
                 }
                 else{
-                    resolve(results[0]["sum"] / results[0]["count"]);
+                    //This calcul permits us to have a round the float to the first decimal
+                    resolve( (Math.round((results[0]["sum"] / results[0]["count"])*10)) / 10 );
                 }
             })
         })
