@@ -1,6 +1,7 @@
 const movies_model = require("../models/movies_model");
 const comment_model = require("../models/comment_model");
 const user_model = require("../models/user_model");
+const profile_model = require("../models/profile_model");
 const Errors = require("../models/errors");
 const moment = require("moment");
 const fs = require("fs");
@@ -21,7 +22,7 @@ const upload = multer({
         allowToUpload(req,file,cb);
     }
 }).single("movie_image");
-
+//I only have access to req.body and req.file when i use upload with multer (multidata post) function so i need to treat all the data here
 const allowToUpload = async (req,file,cb) => {
     if(file !== undefined){
         const allowed_types = /jpeg|jpg/;
@@ -62,18 +63,18 @@ exports.show_all = async (req, res) => {
         res.render('articles/articles', { movies: all_movies.results, isAdmin: req.user.isAdmin });
     }
     catch (error) {
-        res.status(503).render('articles/articles');
+        res.status(503).render('articles/articles' , { isAdmin : req.user.isAdmin});
     }
 };
 
 exports.get_creation_page = (req, res) => {
-    res.render('articles/create_article', { error: undefined });
+    res.render('articles/create_article', { error: undefined , isAdmin : req.user.isAdmin });
 };
 
 exports.create = async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
-            res.render("articles/create_article",{error: err});
+            res.render("articles/create_article",{error: err, isAdmin : req.user.isAdmin});
         }
         else{
             res.redirect("/movies");
@@ -88,14 +89,14 @@ exports.get_update_page = async (req, res) => {
     else {
         try {
             let data_movie = await movies_model.load_movie(req.params.id);
-            res.render("articles/update_article", { data_movie });
+            res.render("articles/update_article", { data_movie : data_movie, isAdmin : req.user.isAdmin});
         }
         catch (error) {
             switch (error) {
                 case Errors.DB_UNAVAILABLE:
                     res.status(503);
                 case Errors.NO_MOVIE_CORRESPONDANCE:
-                    res.status(400).render("articles/articles");
+                    res.status(400).render("articles/articles",{isAdmin : req.user.isAdmin});
             }
         }
     }
@@ -143,8 +144,8 @@ exports.add_comment = async (req, res) => {
         res.redirect("/movies");
     }
     else {
-        //maybe not let an user add comment before 10min
         try {
+            //pad start used to have 02 and not 2 for february
             let today = new Date();
             let ss = String(today.getSeconds()).padStart(2, '0');
             let mi = String(today.getMinutes()).padStart(2, '0');
@@ -228,7 +229,7 @@ exports.get_by_id = async (req, res) => {
                             let username;
                             for (let i = 0; i < comments.length; i++) {
                                 comments[i]["post_date"] = moment(comments[i]["post_date"]).fromNow();
-                                username = await user_model.get_username(comments[i]["id_user"]);
+                                username = await profile_model.get_username(comments[i]["id_user"]);
                                 usernames.push(username[0].username);
                             }
                             if (canComment == true) {

@@ -5,6 +5,11 @@
     <title>Add Movie</title>
 </head>
 <body>
+    <% if(isAdmin){ %>
+        <%-include("../navbar/admin")-%>
+    <% }else{%>
+        <%-include("../navbar/user") -%>
+    <% } %>
     <header>
         <h1> Create an article </h1>
     </header>
@@ -42,5 +47,6 @@
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
     </form>
+    <%-include("../footer")-%>
 </body>
 </html>

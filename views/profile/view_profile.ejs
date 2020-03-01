@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%-include("../header")-%>
+    <title>Articles</title>
+</head>
+
+<body>
+    <% if(isAdmin){ %>
+        <%-include("../navbar/admin")-%>
+    <% }else{%>
+        <%-include("../navbar/user") -%>
+    <% } %>
+    <div class = "container-fluid">
+        <% if(user_data){ %>
+        <ul>
+            <li>Username : <%= user_data[0]["username"]%> </li>
+            <li>Firstname : <%= user_data[0]["firstname"] %></li>
+            <li>Lastname : <%= user_data[0]["lastname"] %></li>
+            <li>Email : <%= user_data[0]["mail"] %></li>
+        </ul>
+        <% }%>
+    </div>
+</body>
+
+</html>

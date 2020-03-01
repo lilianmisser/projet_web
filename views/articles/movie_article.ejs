@@ -5,6 +5,11 @@
     <title> <%= data_movie[0]["name"] %> </title>
 </head>
 <body>
+    <% if(isAdmin){ %>
+        <%-include("../navbar/admin")-%>
+    <% }else{%>
+        <%-include("../navbar/user") -%>
+    <% } %>
     <header>
         <h1> <%= data_movie[0]["name"] %> </h1>
     </header>
@@ -92,5 +97,6 @@
         </table>
         <% } %>
     </div>
+    <%-include("../footer")-%>
 </body>
 </html>

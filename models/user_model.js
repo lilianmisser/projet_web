@@ -84,23 +84,6 @@ const user_model = {
                 }
             })
         })
-    },
-
-    get_username : async (id_user) => {
-        return new Promise((resolve,reject) => {
-            bdd.query("SELECT username FROM user WHERE user.id_user = ?", [id_user],
-            (error,results) =>{
-                if(error) {
-                    reject(Errors.DB_UNAVALAIBLE);
-                }
-                else if (results) {
-                    resolve(results);
-                }
-                else{
-                    reject(Errors.NO_USER_CORRESPONDANCE);
-                }
-            })
-        })
     }
 };
 

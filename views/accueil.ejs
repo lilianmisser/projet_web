@@ -5,8 +5,13 @@
     <title>Home</title>
 </head>
 <body>
-    <%- include("./navbar/admin") -%>
+    <% if(isAdmin){ %>
+        <%-include("./navbar/admin")-%>
+    <% }else{%>
+        <%-include("./navbar/user") -%>
+    <% } %>
     <header>
     </header>
+    <%-include("footer")-%>
 </body>
 </html>

@@ -7,10 +7,11 @@
 </head>
 
 <body>
-    <header>
-    </header>
-    <%- include("../navbar/admin") -%>
-    <a href="/movies/create">Add article</a>
+    <% if(isAdmin){ %>
+        <%-include("../navbar/admin")-%>
+    <% }else{%>
+        <%-include("../navbar/user") -%>
+    <% } %>
     <div class = "container-fluid">
         <% if(movies){ %>
         <table class="table striped">
@@ -67,6 +68,7 @@
         </table>
         <% } %>
     </div>
+    <%-include("../footer")-%>
 </body>
 
 </html>
