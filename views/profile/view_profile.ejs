@@ -12,16 +12,44 @@
     <% }else{%>
         <%-include("../navbar/user") -%>
     <% } %>
+
+    <% if(user_data){ %>
     <div class = "container-fluid">
-        <% if(user_data){ %>
-        <ul>
-            <li>Username : <%= user_data[0]["username"]%> </li>
-            <li>Firstname : <%= user_data[0]["firstname"] %></li>
-            <li>Lastname : <%= user_data[0]["lastname"] %></li>
-            <li>Email : <%= user_data[0]["mail"] %></li>
-        </ul>
-        <% }%>
+        <table class="table striped">
+            <tbody>
+                <tr>
+                    <td>
+                        Username : <%= user_data[0]["username"]%>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Firstname : <%= user_data[0]["firstname"] %>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Lastname : <%= user_data[0]["lastname"] %>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Email : <%= user_data[0]["mail"] %>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>
     </div>
+    <% } %>
 </body>
 
 </html>

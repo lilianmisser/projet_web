@@ -22,7 +22,9 @@ const upload = multer({
         allowToUpload(req,file,cb);
     }
 }).single("movie_image");
-//I only have access to req.body and req.file when i use upload with multer (multidata post) function so i need to treat all the data here
+
+//We only have access to req.body and req.file when i use upload function with multer (multidata post) 
+//so i need to treat all the data here with a callback function retrieving errors or success
 const allowToUpload = async (req,file,cb) => {
     if(file !== undefined){
         const allowed_types = /jpeg|jpg/;
