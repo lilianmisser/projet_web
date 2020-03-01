@@ -9,7 +9,7 @@ router.get("/", verifyToken, movies.show_all);
 
 router.get("/create", verifyToken, isAdmin, movies.get_creation_page);
 
-router.post("/", verifyToken, isAdmin, movies.create);
+router.post("/", verifyToken, isAdmin, movies.create, movies.resize_image);
 
 router.get("/update/:id", verifyToken, isAdmin, movies.get_update_page);
 

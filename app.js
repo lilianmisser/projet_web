@@ -23,5 +23,6 @@ app.get("/home",verifyToken, (req,res) =>{
     res.render("accueil",{isAdmin :  req.user.isAdmin});
 });
 
+
 const port = 8080;
 app.listen(port, () => console.log(`Listening on port : ${port}`));
