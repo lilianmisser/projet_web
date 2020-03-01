@@ -5,8 +5,10 @@ const movies = require("./routes/movies");
 const profile = require("./routes/profile");
 const verifyToken = require("./middleware/verifyToken");
 const path = require("path");
+var cookieParser = require("cookie-parser");
 
 app.set('view engine', 'ejs');
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname,"public")));
 

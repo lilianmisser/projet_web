@@ -43,8 +43,7 @@ exports.login = async (req, res) => {
             const tokenToSend = jwt.sign({
                 username: login_result.user[0],
                 user_id: login_result.user[1],
-                isAdmin: login_result.user[2]
-            },
+                isAdmin: login_result.user[2]},
                 'secret',
                 { expiresIn: "1h" });
             res.cookie("jwt", tokenToSend);

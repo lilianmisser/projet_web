@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 
 const login_access = (req, res, next) => {
-    const token = req.headers.cookie;
-    if (token) {
-        jwt.verify(token.split("=")[1], "secret", (err, user) => {
+    const cookies = req.cookies;
+    if (cookies) {
+        jwt.verify(cookies.jwt, "secret", (err, user) => {
             //error means that my user is not logged in
             if (err){
                 res.clearCookie("jwt");
