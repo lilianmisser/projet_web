@@ -13,6 +13,11 @@
     <header>
         <h1> Update the movie </h1>
     </header>
+    <% if(error){ %>
+        <div class="alert alert-danger" role="alert">
+            <%= error %>
+        </div>
+    <% } %>
     <a href ="/movies">Articles</a>
     <form method="POST" action="/movies/<%=data_movie[0]["id_movie"]%>">
         <div class="form-group">
@@ -31,6 +36,18 @@
         <div class="form-group">
             <label for="running_time">Running Time</label>
             <input type="text" class="form-control" id="running_time" placeholder="Enter running time" name="running_time" value="<%=data_movie[0]["running_time"]%>" required >
+        </div>
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <select class="form-control" id="genre" name="genre">
+            <% for(i=0;i<genres.length;i++){ %>
+                <% if(genres[i].genre_name === data_movie[0]["genre_name"]){%>
+                <option selected><%=genres[i].genre_name%></option>
+                <% }else{%>
+                <option><%=genres[i].genre_name%></option>
+                <% } %>
+            <% } %>
+            </select>
         </div>
         <div class="form-group">
             <label for="synopsis">Synopsis</label>

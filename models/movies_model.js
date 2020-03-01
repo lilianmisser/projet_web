@@ -42,7 +42,7 @@ const movies_model = {
     },
     load_movie: async (id_movie) => {
         return new Promise((resolve, reject) => {
-            bdd.query("SELECT * FROM movies WHERE movies.id_movie = ?", id_movie,
+            bdd.query("SELECT * FROM movies NATURAL JOIN genre WHERE movies.id_movie = ?", id_movie,
             (error, results) => {
                 if (error) {
                     reject(Errors.DB_UNAVAILABLE);
@@ -69,10 +69,10 @@ const movies_model = {
             })
         })
     },
-    update_movie: (id_movie, movie_name, realisator, release_year, running_time, synopsis) => {
+    update_movie: (id_movie, movie_name, realisator, release_year, running_time, synopsis, id_genre) => {
         return new Promise((resolve,reject) => {
             bdd.query("UPDATE movies SET ? WHERE movies.id_movie = ?",
-            [{ name: movie_name, realisator: realisator, release_year: parseInt(release_year), running_time: parseInt(running_time), synopsis: synopsis},parseInt(id_movie)],
+            [{ name: movie_name, realisator: realisator, release_year: parseInt(release_year), running_time: parseInt(running_time), synopsis: synopsis, id_genre : id_genre},parseInt(id_movie)],
             (error, results) => {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
@@ -80,7 +80,7 @@ const movies_model = {
                 else{
                     resolve();
                 }
-        })
+            })
         })
     },
 

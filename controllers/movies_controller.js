@@ -41,8 +41,8 @@ const allowToUpload = async (req, file, cb) => {
                 cb("Release year and running time have to be numbers");
             }
             else {
-                if (req.body.movie_name.search("_") === -1) {              
-                    try{
+                if (req.body.movie_name.search("_") === -1) {
+                    try {
                         let id_genre = await genre_model.get_id_genre(req.body.genre);
                         try {
                             await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis, id_genre);
@@ -52,14 +52,14 @@ const allowToUpload = async (req, file, cb) => {
                             cb(error.message);
                         }
                     }
-                    catch(error){
-                        switch(error){
+                    catch (error) {
+                        switch (error) {
                             case Errors.DB_UNAVALAIBLE:
                                 cb(error.message);
                             case Errors.WRONG_GENRE_NAME:
                                 cb(error.message);
                         }
-                    }                    
+                    }
                 }
                 else {
                     cb("The name of the movie can't have underscores inside");
@@ -88,11 +88,11 @@ exports.show_all = async (req, res) => {
 };
 
 exports.get_creation_page = async (req, res) => {
-    try{
+    try {
         let genres = await genre_model.get_all_genres();
-        res.render('articles/create_article', { error: undefined, isAdmin: req.user.isAdmin, genres : genres});
+        res.render('articles/create_article', { error: undefined, isAdmin: req.user.isAdmin, genres: genres });
     }
-    catch(error){
+    catch (error) {
         res.status(503);
     }
 };
@@ -100,11 +100,11 @@ exports.get_creation_page = async (req, res) => {
 exports.create = async (req, res, next) => {
     upload(req, res, async (err) => {
         if (err) {
-        try{
-            let genres = await genre_model.get_all_genres();
-            res.render("articles/create_article", { error: err, isAdmin: req.user.isAdmin , genres : genres});
+            try {
+                let genres = await genre_model.get_all_genres();
+                res.render("articles/create_article", { error: err, isAdmin: req.user.isAdmin, genres: genres });
             }
-            catch(error){
+            catch (error) {
                 res.status(503);
             }
         }
@@ -119,7 +119,7 @@ exports.resize_image = async (req, res) => {
     await sharp("./public/movie_images/" + req.file.filename).resize(200, 200).toFile("./public/movie_images/_" + req.file.filename);
     fs.unlink("./public/movie_images/" + req.file.filename, (err) => {
         if (err) {
-            console.log(err);   
+            console.log(err);
         }
     });
     res.redirect("/movies");
@@ -131,16 +131,22 @@ exports.get_update_page = async (req, res) => {
     }
     else {
         try {
-            let data_movie = await movies_model.load_movie(req.params.id);
-            res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin });
+            let genres = await genre_model.get_all_genres();
+            try {
+                let data_movie = await movies_model.load_movie(req.params.id);
+                res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin, genres: genres, error:undefined });
+            }
+            catch (error) {
+                switch (error) {
+                    case Errors.DB_UNAVAILABLE:
+                        res.status(503);
+                    case Errors.NO_MOVIE_CORRESPONDANCE:
+                        res.status(400).render("articles/articles", { isAdmin: req.user.isAdmin });
+                }
+            }
         }
         catch (error) {
-            switch (error) {
-                case Errors.DB_UNAVAILABLE:
-                    res.status(503);
-                case Errors.NO_MOVIE_CORRESPONDANCE:
-                    res.status(400).render("articles/articles", { isAdmin: req.user.isAdmin });
-            }
+            res.status(503);
         }
     }
 };
@@ -331,34 +337,58 @@ exports.update_by_id = async (req, res) => {
         res.redirect("/movies");
     }
     else {
-        try {
-            let movie_name = await movies_model.get_movie_name(+req.params.id);
-            if (movie_name !== undefined) {
+        if (isNaN(req.body.release_year) || isNaN(req.body.running_time)) {
+            res.status(400).send("Release year and running time have to be numbers");
+        }
+        else {
+            if (req.body.movie_name.search("_") === -1) {
                 try {
-                    movies_model.update_movie(req.params.id, req.body.movie_name, req.body.realisator, req.body.release_year, req.body.running_time, req.body.synopsis);
-                    let core_path = './public/movie_images/_' + movie_name.replace(/\s/g, '_');
-                    let core_new_path = './public/movie_images/_' + req.body.movie_name.replace(/\s/g, '_');
-                    let existing_path = ((fs.existsSync(core_path + ".jpg")) || (fs.existsSync(core_path + ".jpeg")));
-                    if (existing_path !== false) {
-                        let path_to_update = (fs.existsSync(core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
-                        let new_path = (fs.existsSync(core_path + ".jpg") ? core_new_path + ".jpg" : core_new_path + ".jpeg");
-                        fs.rename(path_to_update, new_path, (err) => {
-                            if (err) {
-                                console.log(err);
+                    let movie_name = await movies_model.get_movie_name(+req.params.id);
+                    if (movie_name !== undefined) {
+                        try {
+                            let id_genre = await genre_model.get_id_genre(req.body.genre);
+                            try {
+                                movies_model.update_movie(req.params.id, req.body.movie_name, req.body.realisator, req.body.release_year, req.body.running_time, req.body.synopsis, id_genre);
+                                let core_path = './public/movie_images/_' + movie_name.replace(/\s/g, '_');
+                                let core_new_path = './public/movie_images/_' + req.body.movie_name.replace(/\s/g, '_');
+                                let existing_path = ((fs.existsSync(core_path + ".jpg")) || (fs.existsSync(core_path + ".jpeg")));
+                                if (existing_path !== false) {
+                                    let path_to_update = (fs.existsSync(core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
+                                    let new_path = (fs.existsSync(core_path + ".jpg") ? core_new_path + ".jpg" : core_new_path + ".jpeg");
+                                    fs.rename(path_to_update, new_path, (err) => {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                    });
+                                }
+                                res.redirect("/movies");
                             }
-                        });
+                            catch (error) {
+                                switch(error){
+                                    case Errors.DB_UNAVALAIBLE:
+                                        res.status(503);
+                                }
+                            }
+                        }
+                        catch (error) {
+                            switch (error) {
+                                case Errors.DB_UNAVALAIBLE:
+                                    res.status(503);
+                                case Errors.WRONG_GENRE_NAME:
+                                    res.status(400).send(error.message);
+                            }
+                        }
                     }
-                    res.redirect("/movies");
-                }
-                catch (error) {
+                    else {
+                        res.redirect("/movies");
+                    }
+                } catch{
                     res.status(503);
                 }
             }
             else {
-                res.redirect("/movies");
+                res.status(400).send("No underscores in movie name");
             }
-        } catch{
-            res.status(503)
         }
     }
 };
