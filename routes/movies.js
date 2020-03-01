@@ -3,6 +3,7 @@ const router = express.Router();
 const verifyToken = require("../middleware/verifyToken");
 const isAdmin = require("../middleware/isAdmin");
 const movies = require("../controllers/movies_controller");
+const genre = require("../controllers/genre_controller");
 
 
 router.get("/", verifyToken, movies.show_all);
@@ -10,6 +11,10 @@ router.get("/", verifyToken, movies.show_all);
 router.get("/create", verifyToken, isAdmin, movies.get_creation_page);
 
 router.post("/", verifyToken, isAdmin, movies.create, movies.resize_image);
+
+router.get("/genres", verifyToken, genre.get_all_genres);
+
+router.post("/genres", verifyToken, isAdmin, genre.add_genre);
 
 router.get("/update/:id", verifyToken, isAdmin, movies.get_update_page);
 

@@ -2,7 +2,7 @@ const bdd = require("./bdd");
 const Errors = require("./errors");
 
 const movies_model = {
-    insert_movie: async (movie_name, realisator, release_year, running_time, synopsis, creator) => {
+    insert_movie: async (movie_name, realisator, release_year, running_time, synopsis, id_genre) => {
         return new Promise((resolve,reject) => {
             bdd.query("SELECT name FROM movies WHERE movies.name = ?",movie_name,
             (error,results) => {
@@ -14,7 +14,7 @@ const movies_model = {
                 }
                 else{
                     bdd.query("INSERT INTO movies SET ?",
-                    { name: movie_name, realisator: realisator, release_year: release_year, running_time: running_time, synopsis: synopsis, id_user: creator },
+                    { name: movie_name, realisator: realisator, release_year: release_year, running_time: running_time, synopsis: synopsis, id_genre: id_genre },
                     (error, results) => {
                         if (error){
                             reject(Errors.DB_UNAVAILABLE);

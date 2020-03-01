@@ -45,7 +45,7 @@ const user_model = {
                 }
                 else{
                     bdd.query("SELECT mail FROM user WHERE user.mail = ?",email,
-                    (err,results) =>{
+                    (error,results) =>{
                         if(error){
                             reject(Errors.DB_UNAVALAIBLE);
                         }

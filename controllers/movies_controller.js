@@ -2,6 +2,7 @@
 const movies_model = require("../models/movies_model");
 const comment_model = require("../models/comment_model");
 const user_model = require("../models/user_model");
+const genre_model = require("../models/genre_model");
 const profile_model = require("../models/profile_model");
 const Errors = require("../models/errors");
 //modules
@@ -16,7 +17,7 @@ const image_storage = multer.diskStorage({
         cb(null, "./public/movie_images/");
     },
     filename: function (req, file, cb) {
-        cb(null, req.body.movie_name.replace(/\s/g, '_') + path.extname(file.originalname));
+        cb(null, req.body.movie_name.replace(/\s/g, '_') + (path.extname(file.originalname)).toLowerCase());
     }
 });
 const upload = multer({
@@ -40,14 +41,25 @@ const allowToUpload = async (req, file, cb) => {
                 cb("Release year and running time have to be numbers");
             }
             else {
-                if (req.body.movie_name.search("_") === -1) {
-                    try {
-                        await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis, req.user.user_id);
-                        cb(null, true);
+                if (req.body.movie_name.search("_") === -1) {              
+                    try{
+                        let id_genre = await genre_model.get_id_genre(req.body.genre);
+                        try {
+                            await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis, id_genre);
+                            cb(null, true);
+                        }
+                        catch (error) {
+                            cb(error.message);
+                        }
                     }
-                    catch (error) {
-                        cb(error.message);
-                    }
+                    catch(error){
+                        switch(error){
+                            case Errors.DB_UNAVALAIBLE:
+                                cb(error.message);
+                            case Errors.WRONG_GENRE_NAME:
+                                cb(error.message);
+                        }
+                    }                    
                 }
                 else {
                     cb("The name of the movie can't have underscores inside");
@@ -75,15 +87,26 @@ exports.show_all = async (req, res) => {
     }
 };
 
-exports.get_creation_page = (req, res) => {
-    res.render('articles/create_article', { error: undefined, isAdmin: req.user.isAdmin });
+exports.get_creation_page = async (req, res) => {
+    try{
+        let genres = await genre_model.get_all_genres();
+        res.render('articles/create_article', { error: undefined, isAdmin: req.user.isAdmin, genres : genres});
+    }
+    catch(error){
+        res.status(503);
+    }
 };
 
 exports.create = async (req, res, next) => {
     upload(req, res, async (err) => {
-        console.log(req.file);
         if (err) {
-            res.render("articles/create_article", { error: err, isAdmin: req.user.isAdmin });
+        try{
+            let genres = await genre_model.get_all_genres();
+            res.render("articles/create_article", { error: err, isAdmin: req.user.isAdmin , genres : genres});
+            }
+            catch(error){
+                res.status(503);
+            }
         }
         else {
             next();
@@ -96,7 +119,7 @@ exports.resize_image = async (req, res) => {
     await sharp("./public/movie_images/" + req.file.filename).resize(200, 200).toFile("./public/movie_images/_" + req.file.filename);
     fs.unlink("./public/movie_images/" + req.file.filename, (err) => {
         if (err) {
-            console.log(err);
+            console.log(err);   
         }
     });
     res.redirect("/movies");
@@ -313,12 +336,12 @@ exports.update_by_id = async (req, res) => {
             if (movie_name !== undefined) {
                 try {
                     movies_model.update_movie(req.params.id, req.body.movie_name, req.body.realisator, req.body.release_year, req.body.running_time, req.body.synopsis);
-                    let core_path = './public/movie_images/' + movie_name.replace(/\s/g, '_');
-                    let core_new_path = './public/movie_images/' + req.body.movie_name.replace(/\s/g, '_');
+                    let core_path = './public/movie_images/_' + movie_name.replace(/\s/g, '_');
+                    let core_new_path = './public/movie_images/_' + req.body.movie_name.replace(/\s/g, '_');
                     let existing_path = ((fs.existsSync(core_path + ".jpg")) || (fs.existsSync(core_path + ".jpeg")));
                     if (existing_path !== false) {
                         let path_to_update = (fs.existsSync(core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
-                        let new_path = (fs.existsSync(core_new_path + ".jpg") ? core_new_path + ".jpg" : core_new_path + ".jpeg");
+                        let new_path = (fs.existsSync(core_path + ".jpg") ? core_new_path + ".jpg" : core_new_path + ".jpeg");
                         fs.rename(path_to_update, new_path, (err) => {
                             if (err) {
                                 console.log(err);

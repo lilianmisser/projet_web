@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.use("/users",users);
 app.use("/movies",movies);
-app.use("/profile",profile)
+app.use("/profile",profile);
 
 
 app.get("/", (req,res) =>{

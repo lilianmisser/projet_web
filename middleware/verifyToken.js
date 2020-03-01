@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
-    const token = req.headers.cookie;
-    if (token) {
-        jwt.verify(token.split("=")[1], "secret", (err, user) => {
+    const cookies = req.headers.cookie;
+    if (cookies) {
+        jwt.verify(cookies.split("=")[1], "secret", (err, user) => {
             if (err) return res.render("users/login",{error : undefined});
             req.user = user;
             next();

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<%- include("../header") -%>
+    <title>Genres</title>
+</head>
+<body>
+    <% if(isAdmin){ %>
+        <%-include("../navbar/admin")-%>
+    <% }else{%>
+        <%-include("../navbar/user") -%>
+    <% } %>
+    <header>
+    </header>
+    <% if(genres){ %>
+    <table class="table striped">
+        <tbody>
+            <% for(i=0;i<genres.length;i++){ %>
+            <tr>
+                <td>
+                    <%= genres[i]["genre_name"] %>
+                </td>
+                <td>
+                    <%= genres[i]["wording"]%>
+                </td>
+                <td>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <% } %>
+    <br>
+    <% if(isAdmin){ %>
+    <div class="container-fluid">
+        <form method="POST" action="/movies/genres">
+            <div class="form-group">
+                <label for="genre_name">You can add a new genre</label>
+                <input type="text" class="form-control" id="genre_name" placeholder="Enter genre name" name="genre_name" required>
+                <label for="description">add a quick description</label>
+                <input type="text" class="form-control" id="description" placeholder="Enter your description" name="description" required>
+            </div>
+            <button type="submit" class ="btn btn-info">Add Genre</button>
+        </form>
+    </div>
+    <% } %>
+    <%-include("../footer")-%>
+</body>
+</html>
