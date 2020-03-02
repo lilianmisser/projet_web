@@ -18,7 +18,7 @@ const genre_model = {
 
     get_movies_by_genre : async (id_genre) => {
         return new Promise((resolve,reject) => {
-            bdd.query("SELECT * FROM movies NATURAL JOIN genre WHERE id_genre = ?",[id_genre],
+            bdd.query("SELECT * FROM movies NATURAL JOIN movie_genre WHERE id_genre = ?",[id_genre],
             (error,results) => {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
@@ -65,8 +65,8 @@ const genre_model = {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }
-                else if(results[0] !== undefined){
-                    reject(Errors.GENRE_NAME_ALREADY_EXISTS);
+                else if(results[0] == undefined){
+                    reject(Errors.GENRE_NAME_UNKNOWN);
                 }
                 else{
                     bdd.query("DELETE FROM genre WHERE genre.genre_name = ?",genre,
@@ -95,6 +95,75 @@ const genre_model = {
                 }
                 else{
                     resolve(results[0].id_genre);
+                }
+            })
+        })
+    },
+
+    update_genre_wording : async (genre,wording) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT genre_name FROM genre WHERE genre.genre_name = ?",[genre],
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else if(results[0] == undefined){
+                    reject(Errors.GENRE_NAME_UNKNOWN);
+                }
+                else{
+                    bdd.query("UPDATE genre SET ? WHERE genre.genre_name = ?",{wording : wording},
+                    (error,results) => {
+                        if(error){
+                            reject(Errors.DB_UNAVALAIBLE);
+                        }
+                        else{
+                            resolve();
+                        }
+                    })
+                }
+            })
+        })
+    },
+
+    get_genres_movie: async (id_movie) => {
+        return new Promise( async (resolve,reject) => {
+            bdd.query("SELECT genre_name FROM genre,movie_genre WHERE movie_genre.id_movie = ? AND genre.id_genre = movie_genre.id_genre",[id_movie],
+            (error,results) => {
+                console.log(results);
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve(results);
+                }
+            })
+        })
+    },
+
+    add_genre_for_movie : async (movie_name,id_genre) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("INSERT INTO movie_genre (id_movie,id_genre) SELECT id_movie,id_genre FROM movies,genre WHERE movies.name = ? AND genre.id_genre = ?",
+            [movie_name,id_genre],
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve();
+                }
+            })
+        })
+    },
+
+    delete_genre_for_movie : async (id_movie) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("DELETE FROM movie_genre WHERE movie_genre.id_movie = ?",[id_movie],
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve();
                 }
             })
         })

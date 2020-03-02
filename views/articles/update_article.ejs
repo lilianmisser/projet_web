@@ -37,16 +37,19 @@
             <label for="running_time">Running Time</label>
             <input type="text" class="form-control" id="running_time" placeholder="Enter running time" name="running_time" value="<%=data_movie[0]["running_time"]%>" required >
         </div>
-        <div class="form-group">
+        <div class="form-check">
             <label for="genre">Genre</label>
-            <select class="form-control" id="genre" name="genre">
-            <% for(i=0;i<genres.length;i++){ %>
-                <% if(genres[i].genre_name === data_movie[0]["genre_name"]){%>
-                <option selected><%=genres[i].genre_name%></option>
-                <% }else{%>
-                <option><%=genres[i].genre_name%></option>
-                <% } %>
+            <br>
+        <% for(i=0;i<genres.length;i++){ %>
+            <% if(movies_genre.includes(genres[i].genre_name)){%> 
+            <input class="form-check-input" type="checkbox" value="<%=genres[i].genre_name%>" id="genre" name="genre" checked>
+            <% }else{%>
+                <input class="form-check-input" type="checkbox" value="<%=genres[i].genre_name%>" id="genre" name="genre">
             <% } %>
+             <label class="form-check-label">
+                <%=genres[i].genre_name%>
+            </label>
+        <% } %>
             </select>
         </div>
         <div class="form-group">

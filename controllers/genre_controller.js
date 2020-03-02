@@ -45,7 +45,8 @@ exports.get_movies = async (req,res) => {
             }
 
         }
-        catch{
+        catch(error){
+            console.log(error);
             res.status(503);
         }
     }
@@ -54,6 +55,36 @@ exports.get_movies = async (req,res) => {
             case Errors.DB_UNAVALAIBLE :
                 res.status(503);
             case Errors.WRONG_GENRE_NAME :
+                res.redirect("/movies/genres");
+        }
+    }
+}
+
+exports.delete = async (req,res) => {
+    try{
+        await genre_model.delete_genre(req.params.name)
+        res.redirect("/movies/genres");
+    }
+    catch(error){
+        switch(error){
+            case Errors.DB_UNAVALAIBLE:
+                res.status(503);
+            case Errors.GENRE_NAME_UNKNOWN:
+                res.redirect("/movies/genres");
+        }
+    }
+}
+
+exports.update_wording = async (req,res) => {
+    try{
+        await genre_model.update_genre_wording(req.body.wording);
+        res.redirect("/movies/genres");
+    }
+    catch(error){
+        switch(error){
+            case Errors.DB_UNAVALAIBLE:
+                res.status(503);
+            case Errors.GENRE_NAME_UNKNOWN:
                 res.redirect("/movies/genres");
         }
     }

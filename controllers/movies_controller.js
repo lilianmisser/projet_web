@@ -43,9 +43,17 @@ const allowToUpload = async (req, file, cb) => {
             else {
                 if (req.body.movie_name.search("_") === -1) {
                     try {
-                        let id_genre = await genre_model.get_id_genre(req.body.genre);
+                        let id_genres = [];
+                        let length = (req.body.genre === undefined) ? 0 : req.body.genre.length;
+                        for (i = 0; i < length; i++) {
+                            id_genre = await genre_model.get_id_genre(req.body.genre[i]);
+                            id_genres.push(id_genre);
+                        }
                         try {
-                            await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis, id_genre);
+                            await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis);
+                            for (i = 0; i < id_genres.length; i++) {
+                                await genre_model.add_genre_for_movie(req.body.movie_name, id_genres[i]);
+                            }
                             cb(null, true);
                         }
                         catch (error) {
@@ -131,23 +139,25 @@ exports.get_update_page = async (req, res) => {
     }
     else {
         try {
+            let data_movie = await movies_model.load_movie(+req.params.id);
             let genres = await genre_model.get_all_genres();
-            try {
-                let data_movie = await movies_model.load_movie(req.params.id);
-                res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin, genres: genres, error:undefined });
+            let moviesgenre = await genre_model.get_genres_movie(+req.params.id);
+            let movies_genre = [];
+            //Row Data packet to Array
+            for(i=0;i<moviesgenre.length;i++){
+                movies_genre.push(moviesgenre[i].genre_name);
             }
-            catch (error) {
-                switch (error) {
-                    case Errors.DB_UNAVAILABLE:
-                        res.status(503);
-                    case Errors.NO_MOVIE_CORRESPONDANCE:
-                        res.status(400).render("articles/articles", { isAdmin: req.user.isAdmin });
-                }
-            }
+            res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin, genres: genres, error: undefined , movies_genre : movies_genre});
         }
         catch (error) {
-            res.status(503);
+            switch (error) {
+                case Errors.DB_UNAVAILABLE:
+                    res.status(503);
+                case Errors.NO_MOVIE_CORRESPONDANCE:
+                    res.status(400).render("articles/articles", { isAdmin: req.user.isAdmin });
+            }
         }
+
     }
 };
 
@@ -161,6 +171,7 @@ exports.delete_by_id = async (req, res) => {
             if (movie_name !== undefined) {
                 try {
                     await movies_model.delete_movie(+req.params.id);
+                    await genre_model.delete_genre_for_movie(+req.params.id);
                     let core_path = './public/movie_images/_' + movie_name.replace(/\s/g, '_');
                     let existing_path = ((fs.existsSync(core_path + ".jpg")) || (fs.existsSync(core_path + ".jpeg")));
                     if (existing_path !== false) {
@@ -284,15 +295,7 @@ exports.get_by_id = async (req, res) => {
                                 res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
                             }
                             else {
-                                let now = new Date(Date.now());
-                                let last_comment = new Date(canComment);
-                                let minutes_to_comment = last_comment.getMinutes() + 10 - now.getMinutes();
-                                let seconds_to_comment = last_comment.getSeconds() - now.getSeconds();
-                                if (seconds_to_comment < 0) {
-                                    seconds_to_comment += 60;
-                                    minutes_to_comment -= 1;
-                                }
-                                res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: { minutes_left: minutes_to_comment, seconds_left: seconds_to_comment }, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                                res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
                             }
 
                         } catch (error) {
@@ -300,15 +303,7 @@ exports.get_by_id = async (req, res) => {
                                 res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
                             }
                             else {
-                                let now = new Date(Date.now());
-                                let last_comment = new Date(canComment);
-                                let minutes_to_comment = last_comment.getMinutes() + 10 - now.getMinutes();
-                                let seconds_to_comment = last_comment.getSeconds() - now.getSeconds();
-                                if (seconds_to_comment < 0) {
-                                    seconds_to_comment += 60;
-                                    minutes_to_comment -= 1;
-                                }
-                                res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: { minutes_left: minutes_to_comment, seconds_left: seconds_to_comment }, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                                res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
                             }
                         }
                     }
@@ -346,9 +341,18 @@ exports.update_by_id = async (req, res) => {
                     let movie_name = await movies_model.get_movie_name(+req.params.id);
                     if (movie_name !== undefined) {
                         try {
-                            let id_genre = await genre_model.get_id_genre(req.body.genre);
+                            let id_genres = [];
+                            let length = (req.body.genre === undefined) ? 0 : req.body.genre.length;
+                            for (i = 0; i < length; i++) {
+                                id_genre = await genre_model.get_id_genre(req.body.genre[i]);
+                                id_genres.push(id_genre);
+                            }
                             try {
-                                movies_model.update_movie(req.params.id, req.body.movie_name, req.body.realisator, req.body.release_year, req.body.running_time, req.body.synopsis, id_genre);
+                                await movies_model.update_movie(req.params.id, req.body.movie_name, req.body.realisator, req.body.release_year, req.body.running_time, req.body.synopsis);
+                                await genre_model.delete_genre_for_movie(+req.params.id);
+                                for (i = 0; i < id_genres.length; i++) {
+                                    await genre_model.add_genre_for_movie(req.body.movie_name, id_genres[i]);
+                                }
                                 let core_path = './public/movie_images/_' + movie_name.replace(/\s/g, '_');
                                 let core_new_path = './public/movie_images/_' + req.body.movie_name.replace(/\s/g, '_');
                                 let existing_path = ((fs.existsSync(core_path + ".jpg")) || (fs.existsSync(core_path + ".jpeg")));
@@ -364,7 +368,7 @@ exports.update_by_id = async (req, res) => {
                                 res.redirect("/movies");
                             }
                             catch (error) {
-                                switch(error){
+                                switch (error) {
                                     case Errors.DB_UNAVALAIBLE:
                                         res.status(503);
                                 }
