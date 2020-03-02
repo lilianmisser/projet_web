@@ -16,15 +16,15 @@ const genre_model = {
         })
     },
 
-    get_movies_by_genre : async (genre) => {
+    get_movies_by_genre : async (id_genre) => {
         return new Promise((resolve,reject) => {
-            bdd.query("SELECT * FROM movies NATURAL JOIN genre WHERE movies.genre_name = ?",[genre],
+            bdd.query("SELECT * FROM movies NATURAL JOIN genre WHERE id_genre = ?",[id_genre],
             (error,results) => {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }
                 else if(results[0] === undefined){
-                    reject(Errors.NO_MOVIE_GENRE);
+                    resolve();
                 }
                 else{
                     resolve(results);

@@ -12,9 +12,11 @@ router.get("/create", verifyToken, isAdmin, movies.get_creation_page);
 
 router.post("/", verifyToken, isAdmin, movies.create, movies.resize_image);
 
-router.get("/genres", verifyToken, genre.get_all_genres);
+router.get("/genres", verifyToken, genre.get_all);
 
-router.post("/genres", verifyToken, isAdmin, genre.add_genre);
+router.post("/genres", verifyToken, isAdmin, genre.create);
+
+router.get("/genres/:name", verifyToken, genre.get_movies)
 
 router.get("/update/:id", verifyToken, isAdmin, movies.get_update_page);
 
