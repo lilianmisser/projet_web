@@ -34,6 +34,20 @@ const profile_model = {
                 }
             })
         })
+    },
+
+    delete_profile : async (username) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("DELETE FROM users WHERE user.username = ?",[username],
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve();
+                }                
+            })
+        })
     }
 };
 

@@ -57,10 +57,12 @@ const allowToUpload = async (req, file, cb) => {
                             cb(null, true);
                         }
                         catch (error) {
+                            console.log(error);
                             cb(error.message);
                         }
                     }
                     catch (error) {
+                        console.log(error);
                         switch (error) {
                             case Errors.DB_UNAVALAIBLE:
                                 cb(error.message);
@@ -124,7 +126,7 @@ exports.create = async (req, res, next) => {
 };
 
 exports.resize_image = async (req, res) => {
-    await sharp("./public/movie_images/" + req.file.filename).resize(200, 200).toFile("./public/movie_images/_" + req.file.filename);
+    await sharp("./public/movie_images/" + req.file.filename).resize(216,288).toFile("./public/movie_images/_" + req.file.filename);
     fs.unlink("./public/movie_images/" + req.file.filename, (err) => {
         if (err) {
             console.log(err);

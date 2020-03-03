@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
                 username: login_result.user[0],
                 user_id: login_result.user[1],
                 isAdmin: login_result.user[2]},
-                'secret',
+                process.env.SECRET_KEY,
                 { expiresIn: "1h" });
             res.cookie("jwt", tokenToSend);
             res.redirect("/home");

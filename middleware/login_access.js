@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const login_access = (req, res, next) => {
     const cookies = req.cookies;
     if (cookies) {
-        jwt.verify(cookies.jwt, "secret", (err, user) => {
+        jwt.verify(cookies.jwt, process.env.SECRET_KEY, (err, user) => {
             //error means that my user is not logged in
             if (err){
                 res.clearCookie("jwt");
