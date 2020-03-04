@@ -12,6 +12,14 @@
     <% }else{%>
         <%-include("../navbar/user") -%>
     <% } %>
+
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h1 class="display-4">Movies</h1>
+          <p class="lead"><%=desc%></p>
+        </div>
+    </div>
+
     <div class = "container-fluid">
         <% if(movies){ %>
         <table class="table striped">
@@ -20,11 +28,8 @@
                     <th>Movie name</th>
                     <th>Realisator</th>
                     <th>Release year</th>
+                    <th>Genre(s)</th>
                     <th></th>
-                    <% if(isAdmin){ %>
-                    <th></th>
-                    <th></th>
-                    <% } %>
                 </tr>
             </thead>
             <tbody>
@@ -40,28 +45,15 @@
                         <%= movies[i]["release_year"]%>
                     </td>
                     <td>
+                        <%= genres[i] %>
+                    </td>
+                    <td>
                         <a href="/movies/<%=movies[i]["id_movie"]%>">
                             <button class ="btn btn-warning">
                                 Go to
                             </button>
                         </a>
                     </td>
-                        <% if(isAdmin){ %>
-                    <td>
-                        <a href="/movies/update/<%=movies[i]["id_movie"]%>">
-                            <button class ="btn btn-info">
-                                Update
-                            </button>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="/movies/delete/<%=movies[i]["id_movie"]%>">
-                            <button class ="btn btn-danger">
-                                Delete
-                            </button>
-                        </a>
-                    </td>
-                        <% } %>
                 </tr>
                 <% } %>
             </tbody>

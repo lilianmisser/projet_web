@@ -13,7 +13,17 @@
     <header>
     </header>
 
-    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h1 class="display-4">Welcome to StreamHelper !</h1>
+          <p class="lead">This is the place to find articles rated by our community to improve your streaming experience. Feel free to comment and rate the movies to help
+          </p>
+        </div>
+    </div>
+
+    <% if(nb_output>0){ %>
+    
+    <div id="myCarousel" class="carousel slide" data-ride="carousel" style="width: 216px;height: 288px;">
         <!-- Indicators -->
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
@@ -23,16 +33,24 @@
         </ol>
       
         <!-- Wrapper for slides -->
-        <div class="carousel-inner">
+        <div class="carousel-inner" >
             <div class="item active">
-              <img src=<%= movies[0].image_path%> alt="Los Angeles">
+              <img src=<%= movies[0].image_path%> class="img-responsive" alt="Movie poster">
+              <div class="carousel-caption d-none d-md-block">
+                <h5><%=movies[0].name%></h5>
+                <p><%=movies[0].nb_mark%> users have rated this movie, Average rate : <%=movies[0].avg%> !</p>
+              </div>
             </div>
         <% for(i=1;i<nb_output;i++){%>
           <div class="item">
-            <img src=<%= movies[i].image_path%> alt="LosAngeles">
+            <img src=<%= movies[i].image_path%> class="img-responsive" alt="Movie poster">
+            <div class="carousel-caption d-none d-md-block">
+                <h5><%=movies[i].name%></h5>
+                <p><%=movies[i].nb_mark%> users have rated this movie with an average rate of <%=movies[i].avg%> !</p>
+                <a href="/movies/<%=movies[i].id_movie%>">Article page</a>
+            </div>
           </div>
         <% }%>
-        </div>
         <!-- Left and right controls -->
         <a class="left carousel-control" href="#myCarousel" data-slide="prev">
           <span class="glyphicon glyphicon-chevron-left"></span>
@@ -43,6 +61,8 @@
           <span class="sr-only">Next</span>
         </a>
       </div>
+
+    <% } %>
 
     <%-include("footer")-%>
 </body>

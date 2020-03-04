@@ -9,7 +9,8 @@ const Errors = {
     NO_MOVIE_GENRE : new Error("There are no movies for this genre, we're sorry"),
     GENRE_NAME_ALREADY_EXISTS : new Error("This genre already exists !"),
     WRONG_GENRE_NAME : new Error("Please select a valid genre."),
-    GENRE_NAME_UNKNOWN : new Error("This genre name is not in our database.")
+    GENRE_NAME_UNKNOWN : new Error("This genre name is not in our database."),
+    GENRE_ID_UNKNOWN : new Error("Invalid genre id.")
 }
 
 module.exports = Errors;

@@ -1,102 +1,141 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <%-include("../header")-%>
     <title> <%= data_movie[0]["name"] %> </title>
 </head>
+
 <body>
     <% if(isAdmin){ %>
-        <%-include("../navbar/admin")-%>
+    <%-include("../navbar/admin")-%>
     <% }else{%>
-        <%-include("../navbar/user") -%>
+    <%-include("../navbar/user") -%>
     <% } %>
     <header>
         <h1> <%= data_movie[0]["name"] %> </h1>
     </header>
 
-    <div class="container-fluid">
-        Synopsis : <%= data_movie[0]["synopsis"]%>
-    </div>
-    <br>
-    <img src=<%=image_path%> alt="Movie poster">
-    <br>
-    <% if(canComment == true){ %>
-    <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
-        <div class="form-group">
-            <label for="comment">Comment</label>
-            <textarea class="form-control" id="comment" placeholder="Please write your comment..." name="comment" rows = "4" required ></textarea>
-        </div>
-        <button type="submit" class="btn btn-info">Send</button>
-    </form>
-    <% }else{ %>
-    <div class="alert alert-warning" role="alert">
-        You already posted your opinion about this movie !
-    </div>
+    <% if(isAdmin){ %>
+    <a href="/movies/update/<%=data_movie[0]["id_movie"]%>">
+                <button class ="btn btn-info">
+                    Update
+                </button>
+    </a>
+    <a href="/movies/delete/<%=data_movie[0]["id_movie"]%>">
+        <button class ="btn btn-danger">
+                Delete
+        </button>
+    </a>
     <% } %>
+
     <br>
+    <!-- Movie Card-->
+    <div class="card text-center" style="width: 18rem;">
+        <div class="card-img-top">
+            <img src=<%=image_path%> class="img-responsive" alt="Movie poster">
+        </div>
+        <div class="card-body">
+            <p class="card-title">
+                <%= data_movie[0]["name"] %>
+            </p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Realisator : <%= data_movie[0]["realisator"]%></li>
+                <li class="list-group-item">Genres : </li>
+                <li class="list-group-item">Release year : <%= data_movie[0]["release_year"]%></li>
+                <li class="list-group-item">Running time : <%= data_movie[0]["running_time"]%> minutes.</li>
+            </ul>
+        </div>
+    </div>
+        <!-- END -->
+        <div class="container-fluid">
+            Synopsis : <%= data_movie[0]["synopsis"]%>
+        </div>
     
-    <div class = "container-fluid">
-        <% if(average_mark){ %>
-        <p>Average mark of this movie : <%=average_mark%></p>
-        <% }else{ %>
-        <p>No mark atm give us one !</p>
-        <% } %>
-    </div>
-    <div class = "container-fluid">
-        <form method = "POST" action= "/movies/rate/<%=data_movie[0]["id_movie"]%>">
+
+        <br>
+        <% if(canComment == true){ %>
+        <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
             <div class="form-group">
-                <label for="mark">Give a rate !</label>
-                <select class="form-control" id="mark" name="mark">
-                    <option>0</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                </select>
+                <label for="comment">Comment</label>
+                <textarea class="form-control" id="comment" placeholder="Please write your comment..." name="comment"
+                    rows="4" required></textarea>
             </div>
-            <button type="submit" class="btn btn-warning">Rate</button>
+            <button type="submit" class="btn btn-info">Send</button>
         </form>
-    </div>
-    <div>
-        <% if(comments){ %>
-        <table class="table striped">
-            <thead>
-                <tr>
-                    <th>Content</th>
-                    <th>Comment Date</th>
-                    <th>Username</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(i=0; i<comments.length ; i++){ %>
-                <tr>
-                    <td>
-                        <%= comments[i]["content"] %>
-                    </td>
-                    <td>
-                        <%= comments[i]["post_date"]%>
-                    </td>
-                    <td>
-                        <%= usernames[i]%>
-                    </td>
-                
-                    <% if(username == usernames[i] || isAdmin) { %>
-                    <td>
-                        <a href="/movies/comments/delete/<%=comments[i]["id_comment"]%>">
-                            <button class ="btn btn-danger">
-                                Delete
-                            </button>
-                        </a>
-                    </td>
-                    <% } %>
-                <% } %>
-                </tr>
-            </tbody>
-        </table>
+        <% }else{ %>
+        <div class="alert alert-warning" role="alert">
+            You already posted your opinion about this movie !
+        </div>
         <% } %>
-    </div>
-    <%-include("../footer")-%>
+        <br>
+
+        <div class="container-fluid">
+            <% if(average_mark){ %>
+            <p>Average mark of this movie : <%=average_mark%></p>
+            <% }else{ %>
+            <p>No mark atm give us one !</p>
+            <% } %>
+        </div>
+        <div class="container-fluid">
+            <form method="POST" action="/movies/rate/<%=data_movie[0]["id_movie"]%>">
+                <div class="form-group">
+                    <label for="mark">Give a rate !</label>
+                    <select class="form-control" id="mark" name="mark">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-warning">Rate</button>
+            </form>
+        </div>
+        <div>
+            <% if(comments){ %>
+            <table class="table striped">
+                <thead>
+                    <tr>
+                        <th>Content</th>
+                        <th>Comment Date</th>
+                        <th>Username</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(i=0; i<comments.length ; i++){ %>
+                    <tr>
+                        <td>
+                            <%= comments[i]["content"] %>
+                        </td>
+                        <td>
+                            <%= comments[i]["post_date"]%>
+                        </td>
+                        <td>
+                            <%= usernames[i]%>
+                        </td>
+
+                        <% if(username == usernames[i] || isAdmin) { %>
+                        <td>
+                            <a href="/movies/comments/delete/<%=comments[i]["id_comment"]%>">
+                                <button class="btn btn-danger">
+                                    Delete
+                                </button>
+                            </a>
+                        </td>
+                        <td>
+
+                        </td>
+                        <% } %>
+                        <% } %>
+                    </tr>
+                </tbody>
+            </table>
+            <% } %>
+        </div>
+        <%-include("../footer")-%>
 </body>
+
 </html>

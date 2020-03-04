@@ -4,6 +4,7 @@ const comment_model = require("../models/comment_model");
 const user_model = require("../models/user_model");
 const genre_model = require("../models/genre_model");
 const profile_model = require("../models/profile_model");
+const rating_model = require("../models/rating_model");
 const Errors = require("../models/errors");
 //modules
 const moment = require("moment");
@@ -85,15 +86,56 @@ const allowToUpload = async (req, file, cb) => {
     }
 };
 
+//Post conditions : A tab containing movies informations (Used with a specifical query)
+//Function that returns an array containing the genres for each movie
+get_genre = async (tab) => {
+    let genres = [];
+    let genres_movie;
+    let string_genre = "";
+    for (i = 0; i < tab.length; i++) {
+        genres_movie = await genre_model.get_genres_movie(+tab[i]["id_movie"]);
+        for (j = 0; j < genres_movie.length; j++) {
+            if (j == (genres_movie.length - 1)) {
+                string_genre += genres_movie[j]["genre_name"];
+                genres.push(string_genre);
+                string_genre = "";
+            }
+            else {
+                string_genre += genres_movie[j]["genre_name"] + ",";
+            }
+        }
+    }
+    return genres;
+}
+
+
+//Function that returns the path of the movie image, if it doesnt finds it showing an undefined image as replacement
+get_image_path = (movie_name) => {
+    let core_path = '/movie_images/_' + movie_name.replace(/\s/g, '_');
+    let existing_path = ((fs.existsSync("./public" + core_path + ".jpg")) || (fs.existsSync("./public" + core_path + ".jpeg")));
+    if (existing_path === false) {
+        return "/undefined.jpeg";
+    }
+    else {
+        return (fs.existsSync("./public" + core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
+    }
+}
 //Controller functions
 
 exports.show_all = async (req, res) => {
     try {
         let all_movies = await movies_model.load_all_movies();
-        res.render('articles/articles', { movies: all_movies.results, isAdmin: req.user.isAdmin });
+        let genres = await get_genre(all_movies);
+        let images_path = [];
+        for(i=0;i<all_movies.length;i++){
+            images_path.push(get_image_path(all_movies[i]["name"]));
+        }
+        console.log(images_path);
+        res.render('articles/articles', { movies: all_movies, isAdmin: req.user.isAdmin, genres: genres, desc: "Page showing all articles." });
     }
     catch (error) {
-        res.status(503).render('articles/articles', { isAdmin: req.user.isAdmin });
+        console.log(error);
+        res.status(503);
     }
 };
 
@@ -126,7 +168,7 @@ exports.create = async (req, res, next) => {
 };
 
 exports.resize_image = async (req, res) => {
-    await sharp("./public/movie_images/" + req.file.filename).resize(216,288).toFile("./public/movie_images/_" + req.file.filename);
+    await sharp("./public/movie_images/" + req.file.filename).resize(216, 288).toFile("./public/movie_images/_" + req.file.filename);
     fs.unlink("./public/movie_images/" + req.file.filename, (err) => {
         if (err) {
             console.log(err);
@@ -146,10 +188,10 @@ exports.get_update_page = async (req, res) => {
             let moviesgenre = await genre_model.get_genres_movie(+req.params.id);
             let movies_genre = [];
             //Row Data packet to Array
-            for(i=0;i<moviesgenre.length;i++){
+            for (i = 0; i < moviesgenre.length; i++) {
                 movies_genre.push(moviesgenre[i].genre_name);
             }
-            res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin, genres: genres, error: undefined , movies_genre : movies_genre});
+            res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin, genres: genres, error: undefined, movies_genre: movies_genre });
         }
         catch (error) {
             switch (error) {
@@ -247,12 +289,12 @@ exports.rate = async (req, res) => {
     else {
         if (req.body.mark == "0" || req.body.mark == "1" || req.body.mark == "2" || req.body.mark == "3" || req.body.mark == "4" || req.body.mark == "5") {
             try {
-                let already_rated = await movies_model.already_rated(+req.params.id, req.user.user_id);
+                let already_rated = await rating_model.already_rated(+req.params.id, req.user.user_id);
                 if (already_rated) {
-                    movies_model.update_rate_movie(req.user.user_id, +req.params.id, +req.body.mark);
+                    rating_model.update_rate_movie(req.user.user_id, +req.params.id, +req.body.mark);
                     res.redirect("/movies/" + req.params.id);
                 } else {
-                    movies_model.rate_movie(req.user.user_id, +req.params.id, +req.body.mark);
+                    rating_model.rate_movie(req.user.user_id, +req.params.id, +req.body.mark);
                     res.redirect("/movies/" + req.params.id);
                 }
             }
@@ -273,49 +315,42 @@ exports.get_by_id = async (req, res) => {
     else {
         try {
             let data_movie = await movies_model.load_movie(+(req.params.id));
-            let core_path = '/movie_images/_' + data_movie[0]["name"].replace(/\s/g, '_');
-            let existing_path = ((fs.existsSync("./public" + core_path + ".jpg")) || (fs.existsSync("./public" + core_path + ".jpeg")));
-            if (existing_path === false) {
-                res.redirect("/movies");
-            }
-            else {
-                let image_path = (fs.existsSync("./public" + core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
+            let image_path = get_image_path(data_movie[0]["name"]);
+            try {
+                let average_mark = await rating_model.get_movie_rate(+(req.params.id));
                 try {
-                    let average_mark = await movies_model.get_movie_rate(+(req.params.id));
+                    let canComment = await comment_model.canComment(req.user.user_id, +req.params.id);
                     try {
-                        let canComment = await comment_model.canComment(req.user.user_id, +req.params.id);
-                        try {
-                            let comments = await comment_model.all_comment(+(req.params.id));
-                            let usernames = [];
-                            let username;
-                            for (let i = 0; i < comments.length; i++) {
-                                comments[i]["post_date"] = moment(comments[i]["post_date"]).fromNow();
-                                username = await profile_model.get_username(comments[i]["id_user"]);
-                                usernames.push(username[0].username);
-                            }
-                            if (canComment == true) {
-                                res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
-                            }
-                            else {
-                                res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
-                            }
-
-                        } catch (error) {
-                            if (canComment == true) {
-                                res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
-                            }
-                            else {
-                                res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
-                            }
+                        let comments = await comment_model.all_comment(+(req.params.id));
+                        let usernames = [];
+                        let username;
+                        for (let i = 0; i < comments.length; i++) {
+                            comments[i]["post_date"] = moment(comments[i]["post_date"]).fromNow();
+                            username = await profile_model.get_username(comments[i]["id_user"]);
+                            usernames.push(username[0].username);
                         }
-                    }
-                    catch{
-                        res.status(503);
+                        if (canComment == true) {
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                        }
+                        else {
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                        }
+
+                    } catch (error) {
+                        if (canComment == true) {
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                        }
+                        else {
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                        }
                     }
                 }
                 catch{
                     res.status(503);
                 }
+            }
+            catch{
+                res.status(503);
             }
         }
         catch (error) {

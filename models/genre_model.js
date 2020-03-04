@@ -155,6 +155,23 @@ const genre_model = {
         })
     },
 
+    get_desc : async (id_genre) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT wording FROM genre WHERE genre.id_genre = ?",[id_genre],
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else if(results[0] === undefined){
+                    reject(Errors.GENRE_ID_UNKNOWN);
+                }
+                else{
+                    resolve(results);
+                }
+            })
+        })
+    },
+
     delete_genre_for_movie : async (id_movie) => {
         return new Promise((resolve,reject) => {
             bdd.query("DELETE FROM movie_genre WHERE movie_genre.id_movie = ?",[id_movie],
