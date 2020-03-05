@@ -84,23 +84,6 @@ const movies_model = {
         })
     },
 
-    already_rated : async (id_movie,id_user)=>{
-        return new Promise((resolve,reject) =>{
-            bdd.query("SELECT mark FROM movie_mark WHERE movie_mark.id_movie = ? AND movie_mark.id_user = ?",[id_movie,id_user],
-            (error,results) => {
-                if(error){
-                    reject(Errors.DB_UNAVALAIBLE);
-                }
-                else if(results[0] == undefined){
-                    resolve(false);
-                }
-                else{
-                    resolve(true);
-                }
-            })
-        })
-    },
-
     get_movie_name : async (id_movie) => {
         return new Promise((resolve,reject) => {
             bdd.query("SELECT name FROM movies WHERE movies.id_movie = ?",[id_movie],
@@ -118,9 +101,9 @@ const movies_model = {
         })
     },
 
-    get_all_names : async() => {
+    get_all_names_and_id : async() => {
         return new Promise((resolve,reject) => {
-            bdd.query("SELECT name FROM movies",
+            bdd.query("SELECT id_movie,name FROM movies",
             (error,results) => {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);

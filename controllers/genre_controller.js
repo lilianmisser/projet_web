@@ -1,40 +1,7 @@
 const genre_model = require("../models/genre_model");
 const Errors = require("../models/errors");
-
-//Post conditions : A tab containing movies informations (Used with a specifical query)
-//Function that returns an array containing the genres for each movie
-get_genre = async (tab) => {
-    let genres = [];
-    let genres_movie;
-    let string_genre = "";
-    for (i = 0; i < tab.length; i++) {
-        genres_movie = await genre_model.get_genres_movie(+tab[i]["id_movie"]);
-        for (j = 0; j < genres_movie.length; j++) {
-            if (j == (genres_movie.length - 1)) {
-                string_genre += genres_movie[j]["genre_name"];
-                genres.push(string_genre);
-                string_genre = "";
-            }
-            else {
-                string_genre += genres_movie[j]["genre_name"] + ",";
-            }
-        }
-    }
-    return genres;
-}
-
-//Function that returns the path of the movie image, if it doesnt finds it showing an undefined image as replacement
-const fs = require("fs");
-get_image_path = (movie_name) => {
-    let core_path = '/movie_images/_' + movie_name.replace(/\s/g, '_');
-    let existing_path = ((fs.existsSync("./public" + core_path + ".jpg")) || (fs.existsSync("./public" + core_path + ".jpeg")));
-    if (existing_path === false) {
-        return "/undefined.jpeg";
-    }
-    else {
-        return (fs.existsSync("./public" + core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
-    }
-}
+const get_image_path = require("../functions/get_image_path");
+const get_genre = require("../functions/get_genre");
 
 exports.get_all = async (req,res) => {
     try{
@@ -81,7 +48,7 @@ exports.get_movies = async (req,res) => {
             };
 
             if (movies === undefined){
-                res.render("articles/articles",{ movies: undefined, isAdmin: req.user.isAdmin , genres : undefined , desc : desc, image_path : images_path});
+                res.render("articles/articles",{ movies: [], isAdmin: req.user.isAdmin , genres : [] , desc : desc, image_path : images_path});
             }
             else{
                 res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc, image_path : images_path});

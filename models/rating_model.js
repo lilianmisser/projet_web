@@ -60,7 +60,24 @@ const rating_model = {
                 }
             })
         })
-    }
+    },
+
+    already_rated : async (id_movie,id_user)=>{
+        return new Promise((resolve,reject) =>{
+            bdd.query("SELECT mark FROM movie_mark WHERE movie_mark.id_movie = ? AND movie_mark.id_user = ?",[id_movie,id_user],
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else if(results[0] == undefined){
+                    resolve(false);
+                }
+                else{
+                    resolve(true);
+                }
+            })
+        })
+    },
 }
 
 module.exports = rating_model

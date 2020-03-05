@@ -6,6 +6,10 @@ const genre_model = require("../models/genre_model");
 const profile_model = require("../models/profile_model");
 const rating_model = require("../models/rating_model");
 const Errors = require("../models/errors");
+//functions
+const get_image_path = require("../functions/get_image_path");
+const allowToUpload = require("../functions/allowToUpload");
+const get_genre = require("../functions/get_genre");
 //modules
 const moment = require("moment");
 const fs = require("fs");
@@ -29,98 +33,6 @@ const upload = multer({
     }
 }).single("movie_image");
 
-//We only have access to req.body and req.file when i use upload function with multer (multidata post) 
-//so i need to treat all the data here with a callback function retrieving errors or success
-const allowToUpload = async (req, file, cb) => {
-    if (file !== undefined) {
-        const allowed_types = /jpeg|jpg/;
-        //We need to check both extension type and mimetype
-        const extension = allowed_types.test(path.extname(file.originalname).toLowerCase());
-        const mime = allowed_types.test(file.mimetype);
-        if (extension === true && mime === true) {
-            if (isNaN(req.body.release_year) || isNaN(req.body.running_time)) {
-                cb("Release year and running time have to be numbers");
-            }
-            else {
-                if (req.body.movie_name.search("_") === -1) {
-                    try {
-                        let id_genres = [];
-                        let length = (req.body.genre === undefined) ? 0 : req.body.genre.length;
-                        for (i = 0; i < length; i++) {
-                            id_genre = await genre_model.get_id_genre(req.body.genre[i]);
-                            id_genres.push(id_genre);
-                        }
-                        try {
-                            await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis);
-                            for (i = 0; i < id_genres.length; i++) {
-                                await genre_model.add_genre_for_movie(req.body.movie_name, id_genres[i]);
-                            }
-                            cb(null, true);
-                        }
-                        catch (error) {
-                            console.log(error);
-                            cb(error.message);
-                        }
-                    }
-                    catch (error) {
-                        console.log(error);
-                        switch (error) {
-                            case Errors.DB_UNAVALAIBLE:
-                                cb(error.message);
-                            case Errors.WRONG_GENRE_NAME:
-                                cb(error.message);
-                        }
-                    }
-                }
-                else {
-                    cb("The name of the movie can't have underscores inside");
-                }
-            }
-        }
-        else {
-            cb("Only jpeg/jpg images");
-        }
-    }
-    else {
-        cb("Please upload an image");
-    }
-};
-
-//Post conditions : A tab containing movies informations (Used with a specifical query)
-//Function that returns an array containing the genres for each movie
-get_genre = async (tab) => {
-    let genres = [];
-    let genres_movie;
-    let string_genre = "";
-    for (i = 0; i < tab.length; i++) {
-        genres_movie = await genre_model.get_genres_movie(+tab[i]["id_movie"]);
-        for (j = 0; j < genres_movie.length; j++) {
-            if (j == (genres_movie.length - 1)) {
-                string_genre += genres_movie[j]["genre_name"];
-                genres.push(string_genre);
-                string_genre = "";
-            }
-            else {
-                string_genre += genres_movie[j]["genre_name"] + ",";
-            }
-        }
-    }
-    return genres;
-}
-
-
-//Function that returns the path of the movie image, if it doesnt finds it showing an undefined image as replacement
-get_image_path = (movie_name) => {
-    let core_path = '/movie_images/_' + movie_name.replace(/\s/g, '_');
-    let existing_path = ((fs.existsSync("./public" + core_path + ".jpg")) || (fs.existsSync("./public" + core_path + ".jpeg")));
-    if (existing_path === false) {
-        return "/undefined.jpeg";
-    }
-    else {
-        return (fs.existsSync("./public" + core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
-    }
-}
-//Controller functions
 
 exports.show_all = async (req, res) => {
     try {
@@ -297,7 +209,8 @@ exports.rate = async (req, res) => {
                     res.redirect("/movies/" + req.params.id);
                 }
             }
-            catch{
+            catch(error){
+                console.log(error);
                 res.status(503);
             }
         }
@@ -359,7 +272,7 @@ exports.get_by_id = async (req, res) => {
                 case Errors.DB_UNAVAILABLE:
                     res.status(503);
                 case Errors.NO_MOVIE_CORRESPONDANCE:
-                    res.status(400).render("articles/articles");
+                    res.redirect("/movies");
             }
         }
     }
