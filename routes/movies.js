@@ -16,6 +16,8 @@ router.get("/genres", verifyToken, genre.get_all);
 
 router.post("/genres", verifyToken, isAdmin, genre.create);
 
+router.post("/genres/modify_wording",verifyToken, isAdmin, genre.update_wording);
+
 router.get("/genres/delete/:name", verifyToken, isAdmin, genre.delete);
 
 router.get("/genres/:name", verifyToken, genre.get_movies)

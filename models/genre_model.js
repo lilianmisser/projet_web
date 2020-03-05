@@ -107,11 +107,11 @@ const genre_model = {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }
-                else if(results[0] == undefined){
+                else if(results[0] === undefined){
                     reject(Errors.GENRE_NAME_UNKNOWN);
                 }
                 else{
-                    bdd.query("UPDATE genre SET ? WHERE genre.genre_name = ?",{wording : wording},
+                    bdd.query("UPDATE genre SET ? WHERE genre.genre_name = ?",[{wording : wording},genre],
                     (error,results) => {
                         if(error){
                             reject(Errors.DB_UNAVALAIBLE);
@@ -129,7 +129,6 @@ const genre_model = {
         return new Promise( async (resolve,reject) => {
             bdd.query("SELECT genre_name FROM genre,movie_genre WHERE movie_genre.id_movie = ? AND genre.id_genre = movie_genre.id_genre",[id_movie],
             (error,results) => {
-                console.log(results);
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }

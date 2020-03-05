@@ -130,8 +130,7 @@ exports.show_all = async (req, res) => {
         for(i=0;i<all_movies.length;i++){
             images_path.push(get_image_path(all_movies[i]["name"]));
         }
-        console.log(images_path);
-        res.render('articles/articles', { movies: all_movies, isAdmin: req.user.isAdmin, genres: genres, desc: "Page showing all articles." });
+        res.render('articles/articles', { movies: all_movies, isAdmin: req.user.isAdmin, genres: genres, desc: "Page showing all articles.", image_path : images_path});
     }
     catch (error) {
         console.log(error);
@@ -314,7 +313,9 @@ exports.get_by_id = async (req, res) => {
     }
     else {
         try {
-            let data_movie = await movies_model.load_movie(+(req.params.id));
+            let data_movie = await movies_model.load_movie(+req.params.id);
+            console.log(data_movie)
+            let genres = await get_genre(data_movie);
             let image_path = get_image_path(data_movie[0]["name"]);
             try {
                 let average_mark = await rating_model.get_movie_rate(+(req.params.id));
@@ -330,18 +331,18 @@ exports.get_by_id = async (req, res) => {
                             usernames.push(username[0].username);
                         }
                         if (canComment == true) {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres });
                         }
                         else {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres});
                         }
 
                     } catch (error) {
                         if (canComment == true) {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres });
                         }
                         else {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path });
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres });
                         }
                     }
                 }

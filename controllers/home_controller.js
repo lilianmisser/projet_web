@@ -32,7 +32,13 @@ exports.get_home_page = async (req,res) =>{
     let data = await rating_model.get_movies_by_avg();
     try{
         let best_rated_movies = await get_certain_movies(2,3,data);
-        res.render("accueil",{isAdmin :  req.user.isAdmin, movies: best_rated_movies,nb_output : best_rated_movies.length});
+        let all_names = await movies_model.get_all_names();
+        let movies_name = [];
+        for(i=0 ; i< all_names.length ; i++){
+            movies_name.push(all_names[i].name)
+        };
+        //Trying to do auto-completion
+        res.render("accueil",{isAdmin :  req.user.isAdmin, movies: best_rated_movies,movies_name : movies_name,nb_output : best_rated_movies.length});
     }
     catch(error){
         console.log(error);

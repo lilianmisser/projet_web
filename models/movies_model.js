@@ -42,7 +42,7 @@ const movies_model = {
     },
     load_movie: async (id_movie) => {
         return new Promise((resolve, reject) => {
-            bdd.query("SELECT * FROM movies NATURAL JOIN genre WHERE movies.id_movie = ?", id_movie,
+            bdd.query("SELECT * FROM movies WHERE movies.id_movie = ?", id_movie,
             (error, results) => {
                 if (error) {
                     reject(Errors.DB_UNAVAILABLE);
@@ -113,6 +113,20 @@ const movies_model = {
                 }
                 else{
                     resolve();
+                }
+            })
+        })
+    },
+
+    get_all_names : async() => {
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT name FROM movies",
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve(results);
                 }
             })
         })

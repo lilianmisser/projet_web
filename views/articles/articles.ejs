@@ -19,45 +19,42 @@
           <p class="lead"><%=desc%></p>
         </div>
     </div>
-
-    <div class = "container-fluid">
-        <% if(movies){ %>
-        <table class="table striped">
-            <thead>
-                <tr>
-                    <th>Movie name</th>
-                    <th>Realisator</th>
-                    <th>Release year</th>
-                    <th>Genre(s)</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(i=0; i<movies.length ; i++){ %>
-                <tr>
-                    <td>
-                        <%= movies[i]["name"] %>
-                    </td>
-                    <td>
-                        <%= movies[i]["realisator"]%>
-                    </td>
-                    <td>
-                        <%= movies[i]["release_year"]%>
-                    </td>
-                    <td>
-                        <%= genres[i] %>
-                    </td>
-                    <td>
-                        <a href="/movies/<%=movies[i]["id_movie"]%>">
-                            <button class ="btn btn-warning">
-                                Go to
-                            </button>
-                        </a>
-                    </td>
-                </tr>
-                <% } %>
-            </tbody>
-        </table>
+    
+    <div class = "container">
+        <%for(i=0; i<=(movies.length/3);i++){ %>
+        <div class="row">
+            <%for(j=0;j<3;j++){ %>
+            <div class="col-4">
+               <% if((movies.length-i*3-j) > 1){ %>
+                <div class="container">
+                    <!-- Movie Card-->
+                    <div class="card text-center" style="width: 18rem;" >
+                        <div class="card-img-top">
+                            <img src=<%=image_path[i*3+j]%> class="img-responsive" alt="Movie poster">
+                        </div>
+                        <div class="card-body">
+                            <p class="card-title">
+                                <%= movies[i*3+j]["name"] %>
+                            </p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Realisator : <%= movies[0]["realisator"]%></li>
+                                <li class="list-group-item">Genres : <%= genres[i*3+j] %> </li>
+                                <li class="list-group-item">Release year : <%= movies[i*3+j]["release_year"]%></li>
+                                <li class="list-group-item">Running time : <%= movies[i*3+j]["running_time"]%> minutes.</li>
+                                <li class="list-group-item">
+                                    <a href="/movies/<%=movies[i*3+j]["id_movie"]%>">
+                                    <button class ="btn btn-warning">Go to</button>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--END-->    
+                </div>
+               <% } %>
+            </div>
+            <% } %>
+        </div>
         <% } %>
     </div>
     <%-include("../footer")-%>

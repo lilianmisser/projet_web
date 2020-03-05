@@ -23,6 +23,19 @@ get_genre = async (tab) => {
     return genres;
 }
 
+//Function that returns the path of the movie image, if it doesnt finds it showing an undefined image as replacement
+const fs = require("fs");
+get_image_path = (movie_name) => {
+    let core_path = '/movie_images/_' + movie_name.replace(/\s/g, '_');
+    let existing_path = ((fs.existsSync("./public" + core_path + ".jpg")) || (fs.existsSync("./public" + core_path + ".jpeg")));
+    if (existing_path === false) {
+        return "/undefined.jpeg";
+    }
+    else {
+        return (fs.existsSync("./public" + core_path + ".jpg") ? core_path + ".jpg" : core_path + ".jpeg");
+    }
+}
+
 exports.get_all = async (req,res) => {
     try{
         let genres = await genre_model.get_all_genres();
@@ -62,11 +75,16 @@ exports.get_movies = async (req,res) => {
         try{
             let movies = await genre_model.get_movies_by_genre(id_genre);
             let genres = await get_genre(movies);
+            let images_path = [];
+            for(i=0;i<movies.length;i++){
+                images_path.push(get_image_path(movies[i]["name"]));
+            };
+
             if (movies === undefined){
-                res.render("articles/articles",{ movies: undefined, isAdmin: req.user.isAdmin , genres : undefined , desc : desc});
+                res.render("articles/articles",{ movies: undefined, isAdmin: req.user.isAdmin , genres : undefined , desc : desc, image_path : images_path});
             }
             else{
-                res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc});
+                res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc, image_path : images_path});
             }
 
         }
@@ -102,7 +120,7 @@ exports.delete = async (req,res) => {
 
 exports.update_wording = async (req,res) => {
     try{
-        await genre_model.update_genre_wording(req.body.wording);
+        await genre_model.update_genre_wording(req.body.genre,req.body.description);
         res.redirect("/movies/genres");
     }
     catch(error){

@@ -21,7 +21,7 @@ const profile_model = {
 
     get_all_data_profile : async (id_user) => {
         return new Promise((resolve,reject) => {
-            bdd.query("SELECT username,firstname,lastname,mail FROM user WHERE user.id_user = ?", [id_user],
+            bdd.query("SELECT id_user,username,firstname,lastname,mail FROM user WHERE user.id_user = ?", [id_user],
             (error,results) =>{
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
@@ -46,6 +46,21 @@ const profile_model = {
                 else{
                     resolve();
                 }                
+            })
+        })
+    },
+
+    update_profile : async (id_user,firstname,lastname,mail) => {
+        return new Promise((resolve,reject) => {
+            bdd.query("UPDATE user SET ? WHERE user.id_user = ?",[{firstname:firstname,lastname:lastname,mail:mail},id_user],
+            (error,results) => {
+                console.log(error);
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve();
+                }
             })
         })
     }
