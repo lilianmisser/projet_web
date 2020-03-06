@@ -6,12 +6,12 @@
     <title>Home</title>
 </head>
 <body>
+    <header>
     <% if(isAdmin){ %>
         <%-include("./navbar/admin")-%>
     <% }else{%>
         <%-include("./navbar/user") -%>
     <% } %>
-    <header>
     </header>
 
     <div class="jumbotron jumbotron-fluid">
@@ -92,7 +92,6 @@ const searchMatch = async (input) => {
     matches = [];
     matchList.innerHTML = "";
   }
-  console.log(matches);
   showMatches(matches);
 };
 
@@ -100,9 +99,7 @@ const showMatches = matches => {
   if(matches.length > 0){
     const html = matches.map(match =>
       `<div class="card">
-      <div class="card-img">
-          <img src=${movies_path[movies_name.indexOf(match)]} alt="Movie poster">
-      </div>
+          <img src=${movies_path[movies_name.indexOf(match)]} alt="Movie poster" style="width:54px ;height: 72px;">
       <div class="card-body">
           <p class="card-title">
             ${match}

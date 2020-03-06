@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<%- include("../header") -%>
+    <%- include("../header") -%>
     <title>Genres</title>
 </head>
+
 <body>
     <% if(isAdmin){ %>
-        <%-include("../navbar/admin")-%>
+    <%-include("../navbar/admin")-%>
     <% }else{%>
-        <%-include("../navbar/user") -%>
+    <%-include("../navbar/user") -%>
     <% } %>
     <header>
     </header>
@@ -24,11 +26,37 @@
                     <%= genres[i]["wording"]%>
                 </td>
                 <td>
-                    <a href="/movies/genres/<%=genres[i]["genre_name"]%>"><button type="submit" class ="btn btn-warning">Go to</button></a>
+                    <button type="submit" class="btn btn-warning">Go to</button></a>
                 </td>
                 <% if(isAdmin){ %>
                 <td>
-                    <a href="/movies/genres/delete/<%=genres[i]["genre_name"]%>"><button type="submit" class ="btn btn-danger">Delete</button></a>
+                    <button type="submit" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Delete</button>
+                    <!-- The Modal -->
+                    <div class="modal" id="myModal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Delete Validation</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    Are you sure you want to delete this genre.
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                                    <a href="/movies/genres/<%=genres[i]["genre_name"]%>"><button type="button"
+                                            class="btn btn-danger">Delete</button></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </td>
                 <% }%>
             </tr>
@@ -42,11 +70,13 @@
         <form method="POST" action="/movies/genres">
             <div class="form-group">
                 <label for="genre_name">You can add a new genre</label>
-                <input type="text" class="form-control" id="genre_name" placeholder="Enter genre name" name="genre_name" required>
+                <input type="text" class="form-control" id="genre_name" placeholder="Enter genre name" name="genre_name"
+                    required>
                 <label for="description">add a quick description</label>
-                <input type="text" class="form-control" id="description" placeholder="Enter your description" name="description" required>
+                <input type="text" class="form-control" id="description" placeholder="Enter your description"
+                    name="description" required>
             </div>
-            <button type="submit" class ="btn btn-info">Add Genre</button>
+            <button type="submit" class="btn btn-info">Add Genre</button>
         </form>
     </div>
     <br>
@@ -54,24 +84,26 @@
         <form method="POST" action="/movies/genres/modify_wording">
             <div class="form-check">
                 <% for(i=0;i<genres.length;i++){ %>
-                    <input class="form-check-input" type="radio" value="<%=genres[i].genre_name%>" id="genre" name="genre">
-                    <label class="form-check-label">
-                       <%=genres[i]["genre_name"]%>
-                   </label>
-               <% } %>
+                <input class="form-check-inline" type="radio" value="<%=genres[i].genre_name%>" id="genre" name="genre">
+                <label class="form-check-inline">
+                    <%=genres[i]["genre_name"]%>
+                </label>
+                <% } %>
             </div>
-            
+
             <div class="form-group">
                 <label for="description">Modify wording</label>
                 <br>
-                <input type="text" class="form-control" id="description" placeholder="Enter your description" name="description" required>
+                <input type="text" class="form-control" id="description" placeholder="Enter your description"
+                    name="description" required>
             </div>
-            
-            
-            <button type="submit" class ="btn btn-info">Modify genre wording</button>
+
+
+            <button type="submit" class="btn btn-info">Modify genre wording</button>
         </form>
     </div>
     <% } %>
     <%-include("../footer")-%>
 </body>
+
 </html>
