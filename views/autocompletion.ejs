@@ -1,0 +1,46 @@
+<script>
+  //Getting data from back (not the cleanest way)
+  var _data = "<%=auto_data._movies_name%>";
+  var _movies_name = _data.split(",");
+  var _data2 = "<%=auto_data._movies_id%>";
+  var _movies_id = _data2.split(",");
+  var _data3 = "<%=auto_data._movies_path%>"
+  var _movies_path = _data3.split(",");
+  const search = document.getElementById("search");
+  const matchList = document.getElementById("matches");
+  
+  const searchMatch = async (input) => {    
+    let matches = _movies_name.filter(movie =>{
+      const regex = new RegExp("^"+input, 'gi');
+      return movie.match(regex);
+    });
+    
+    if(input.length === 0){
+      matches = [];
+      matchList.innerHTML = "";
+    }
+    showMatches(matches);
+  };
+  
+  const showMatches = matches => {
+    if(matches.length > 0){
+      const html = matches.map(match =>
+        `
+          <div class="card">
+            <img src=${_movies_path[_movies_name.indexOf(match)]} alt="Movie poster" style="width:54px ;height: 72px;">
+        <div class="card-body">
+            <p class="card-title">
+              ${match}
+            </p>
+            <a href="/movies/${_movies_id[_movies_name.indexOf(match)]}">Go to</a>
+        </div>
+        <div>
+      
+        `).join("");
+    
+      matchList.innerHTML = html;
+    }
+  };
+  
+  search.addEventListener("input", () => searchMatch(search.value));
+</script>

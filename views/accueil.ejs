@@ -71,47 +71,4 @@
 </body>
 </html>
 <!-- Autocompletion -->
-<script>
-  //Getting data from back (not the cleanest way)
-var data = "<%=movies_name%>";
-var movies_name = data.split(",");
-var data2 = "<%=movies_id%>";
-var movies_id = data2.split(",");
-var data3 = "<%=movies_path%>"
-var movies_path = data3.split(",");
-const search = document.getElementById("search");
-const matchList = document.getElementById("matches");
-
-const searchMatch = async (input) => {    
-  let matches = movies_name.filter(movie =>{
-    const regex = new RegExp("^"+input, 'gi');
-    return movie.match(regex);
-  });
-  
-  if(input.length === 0){
-    matches = [];
-    matchList.innerHTML = "";
-  }
-  showMatches(matches);
-};
-
-const showMatches = matches => {
-  if(matches.length > 0){
-    const html = matches.map(match =>
-      `<div class="card">
-          <img src=${movies_path[movies_name.indexOf(match)]} alt="Movie poster" style="width:54px ;height: 72px;">
-      <div class="card-body">
-          <p class="card-title">
-            ${match}
-          </p>
-          <a href="/movies/${movies_id[movies_name.indexOf(match)]}">Go to</a>
-      </div>
-      <div>
-      `).join("");
-  
-    matchList.innerHTML = html;
-  }
-};
-
-search.addEventListener("input", () => searchMatch(search.value));
-</script>
+<%-include("autocompletion")%>

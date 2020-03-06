@@ -54,7 +54,6 @@ const profile_model = {
         return new Promise((resolve,reject) => {
             bdd.query("UPDATE user SET ? WHERE user.id_user = ?",[{firstname:firstname,lastname:lastname,mail:mail},id_user],
             (error,results) => {
-                console.log(error);
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }

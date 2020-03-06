@@ -10,6 +10,8 @@ const Errors = require("../models/errors");
 const get_image_path = require("../functions/get_image_path");
 const allowToUpload = require("../functions/allowToUpload");
 const get_genre = require("../functions/get_genre");
+const get_all_movie_data = require("../functions/get_all_movie_data");
+const data_for_autocomplete = require("../functions/data_for_autocomplete");
 //modules
 const moment = require("moment");
 const fs = require("fs");
@@ -33,16 +35,13 @@ const upload = multer({
     }
 }).single("movie_image");
 
-
 exports.show_all = async (req, res) => {
     try {
-        let all_movies = await movies_model.load_all_movies();
-        let genres = await get_genre(all_movies);
-        let images_path = [];
-        for(i=0;i<all_movies.length;i++){
-            images_path.push(get_image_path(all_movies[i]["name"]));
-        }
-        res.render('articles/articles', { movies: all_movies, isAdmin: req.user.isAdmin, genres: genres, desc: "Page showing all articles.", image_path : images_path});
+        let data = await get_all_movie_data();
+        let auto_data = await data_for_autocomplete();
+        res.render('articles/articles', {
+            isAdmin: req.user.isAdmin, desc: "Page showing all articles.", data , auto_data
+        });
     }
     catch (error) {
         console.log(error);
@@ -53,7 +52,8 @@ exports.show_all = async (req, res) => {
 exports.get_creation_page = async (req, res) => {
     try {
         let genres = await genre_model.get_all_genres();
-        res.render('articles/create_article', { error: undefined, isAdmin: req.user.isAdmin, genres: genres });
+        let auto_data = await data_for_autocomplete();
+        res.render('articles/create_article', { error: undefined, isAdmin: req.user.isAdmin, genres: genres , auto_data});
     }
     catch (error) {
         res.status(503);
@@ -79,7 +79,7 @@ exports.create = async (req, res, next) => {
 };
 
 exports.resize_image = async (req, res) => {
-    await sharp("./public/movie_images/" + req.file.filename).resize(216, 288).toFile("./public/movie_images/_" + req.file.filename);
+    await sharp("./public/movie_images/" + req.file.filename).resize(432, 576).toFile("./public/movie_images/_" + req.file.filename);
     fs.unlink("./public/movie_images/" + req.file.filename, (err) => {
         if (err) {
             console.log(err);
@@ -98,11 +98,12 @@ exports.get_update_page = async (req, res) => {
             let genres = await genre_model.get_all_genres();
             let moviesgenre = await genre_model.get_genres_movie(+req.params.id);
             let movies_genre = [];
+            let auto_data = await data_for_autocomplete();
             //Row Data packet to Array
             for (i = 0; i < moviesgenre.length; i++) {
                 movies_genre.push(moviesgenre[i].genre_name);
             }
-            res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin, genres: genres, error: undefined, movies_genre: movies_genre });
+            res.render("articles/update_article", { data_movie: data_movie, isAdmin: req.user.isAdmin, genres: genres, error: undefined, movies_genre: movies_genre, auto_data });
         }
         catch (error) {
             switch (error) {
@@ -209,7 +210,7 @@ exports.rate = async (req, res) => {
                     res.redirect("/movies/" + req.params.id);
                 }
             }
-            catch(error){
+            catch (error) {
                 console.log(error);
                 res.status(503);
             }
@@ -227,13 +228,13 @@ exports.get_by_id = async (req, res) => {
     else {
         try {
             let data_movie = await movies_model.load_movie(+req.params.id);
-            console.log(data_movie)
             let genres = await get_genre(data_movie);
             let image_path = get_image_path(data_movie[0]["name"]);
             try {
                 let average_mark = await rating_model.get_movie_rate(+(req.params.id));
                 try {
                     let canComment = await comment_model.canComment(req.user.user_id, +req.params.id);
+                    let auto_data = await data_for_autocomplete();
                     try {
                         let comments = await comment_model.all_comment(+(req.params.id));
                         let usernames = [];
@@ -244,18 +245,18 @@ exports.get_by_id = async (req, res) => {
                             usernames.push(username[0].username);
                         }
                         if (canComment == true) {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres });
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres: genres ,auto_data});
                         }
                         else {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres});
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: comments, usernames: usernames, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres: genres ,auto_data});
                         }
 
                     } catch (error) {
                         if (canComment == true) {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres });
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres: genres, auto_data });
                         }
                         else {
-                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres : genres });
+                            res.render("articles/movie_article", { data_movie: data_movie, comments: undefined, usernames: undefined, average_mark: average_mark, canComment: canComment, username: req.user.username, isAdmin: req.user.isAdmin, image_path: image_path, genres: genres, auto_data });
                         }
                     }
                 }

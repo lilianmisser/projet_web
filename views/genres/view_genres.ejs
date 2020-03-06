@@ -26,7 +26,7 @@
                     <%= genres[i]["wording"]%>
                 </td>
                 <td>
-                    <button type="submit" class="btn btn-warning">Go to</button></a>
+                    <a href="/movies/genres/<%=genres[i]["genre_name"]%>"><button type="submit" class="btn btn-warning">Go to</button></a>
                 </td>
                 <% if(isAdmin){ %>
                 <td>
@@ -50,7 +50,7 @@
                                 <!-- Modal footer -->
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                                    <a href="/movies/genres/<%=genres[i]["genre_name"]%>"><button type="button"
+                                    <a href="/movies/genres/delete/<%=genres[i]["genre_name"]%>"><button type="button"
                                             class="btn btn-danger">Delete</button></a>
                                 </div>
 
@@ -68,11 +68,11 @@
     <% if(isAdmin){ %>
     <div class="container-fluid">
         <form method="POST" action="/movies/genres">
+            <h5>You can add a new genre</h5>
             <div class="form-group">
-                <label for="genre_name">You can add a new genre</label>
                 <input type="text" class="form-control" id="genre_name" placeholder="Enter genre name" name="genre_name"
                     required>
-                <label for="description">add a quick description</label>
+                <br>
                 <input type="text" class="form-control" id="description" placeholder="Enter your description"
                     name="description" required>
             </div>
@@ -82,6 +82,7 @@
     <br>
     <div class="container-fluid">
         <form method="POST" action="/movies/genres/modify_wording">
+            <h5>You can modify the wording of an existing genre.</h5>
             <div class="form-check">
                 <% for(i=0;i<genres.length;i++){ %>
                 <input class="form-check-inline" type="radio" value="<%=genres[i].genre_name%>" id="genre" name="genre">
@@ -92,7 +93,6 @@
             </div>
 
             <div class="form-group">
-                <label for="description">Modify wording</label>
                 <br>
                 <input type="text" class="form-control" id="description" placeholder="Enter your description"
                     name="description" required>
@@ -105,5 +105,5 @@
     <% } %>
     <%-include("../footer")-%>
 </body>
-
 </html>
+<%-include("../autocompletion")%>

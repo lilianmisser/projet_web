@@ -1,6 +1,7 @@
 const profile_model = require("../models/profile_model");
 const user_model = require("../models/user_model");
 const Errors = require("../models/errors");
+const data_for_autocomplete = require("../functions/data_for_autocomplete");
 
 exports.get_profile_page = async (req,res) => {
     try{
@@ -39,13 +40,14 @@ exports.update = async (req,res) => {
     else{
         try{
             let err = user_model.check_informations("goodusername",req.body.firstname,req.body.lastname,req.body.mail,"goodpassword");
+            let auto_data = await data_for_autocomplete();
             if(err === undefined){
                 await profile_model.update_profile(+req.params.id,req.body.firstname,req.body.lastname,req.body.mail);
                 res.redirect("/profile");
             }
             else{
                 let user_data = await profile_model.get_all_data_profile(req.user.user_id);
-                res.render("profile/update_profile", {user_data :user_data, isAdmin : req.user.isAdmin , error : err});
+                res.render("profile/update_profile", {user_data :user_data, isAdmin : req.user.isAdmin , error : err,auto_data});
             }
         }
         catch(error){

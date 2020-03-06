@@ -2,15 +2,17 @@ const genre_model = require("../models/genre_model");
 const Errors = require("../models/errors");
 const get_image_path = require("../functions/get_image_path");
 const get_genre = require("../functions/get_genre");
+const data_for_autocomplete = require("../functions/data_for_autocomplete");
 
 exports.get_all = async (req,res) => {
     try{
         let genres = await genre_model.get_all_genres();
+        let auto_data = await data_for_autocomplete();
         if(genres === undefined){
-            res.render("genres/view_genres",{isAdmin : req.user.isAdmin, genres : undefined});
+            res.render("genres/view_genres",{isAdmin : req.user.isAdmin, genres : undefined, auto_data});
         }
         else{
-            res.render("genres/view_genres",{isAdmin : req.user.isAdmin, genres : genres});
+            res.render("genres/view_genres",{isAdmin : req.user.isAdmin, genres : genres, auto_data});
         }
     }
     catch(error){
@@ -42,16 +44,17 @@ exports.get_movies = async (req,res) => {
         try{
             let movies = await genre_model.get_movies_by_genre(id_genre);
             let genres = await get_genre(movies);
+            let auto_data = await data_for_autocomplete();
             let images_path = [];
             for(i=0;i<movies.length;i++){
                 images_path.push(get_image_path(movies[i]["name"]));
             };
 
             if (movies === undefined){
-                res.render("articles/articles",{ movies: [], isAdmin: req.user.isAdmin , genres : [] , desc : desc, image_path : images_path});
+                res.render("articles/articles",{ movies: [], isAdmin: req.user.isAdmin , genres : [] , desc : desc, image_path : images_path, auto_data});
             }
             else{
-                res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc, image_path : images_path});
+                res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc, image_path : images_path}, auto_data);
             }
 
         }

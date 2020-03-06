@@ -20,36 +20,114 @@
         </div>
     </div>
 
-    <div class="row rows-cols-1 row-cols-3">
-        <%for(i=0; i<movies.length;i++){ %>
-            <div class="col mb-1">
+    <button class="btn btn-info" id="orderByYear">Ordered by year</button>
+    <button class="btn btn-info" id="latestAdditions">Latest Additions</button>
+    <div class="container" id="output">
+        <%for(i=0; i<data.movies_name.length/3;i++){ %>
+        <div class="row">
+            <%for(j=0;j<3;j++){%>
+                <%if(i*3+j<data.movies_name.length){%>
                 <!-- Movie Card-->
-                <div class ="card text-white bg-dark mb-3">
+                <div class ="card text-center text-white bg-dark pr-3 pl-3 mb-3">
                     <div class="card-header">
-                    <img src=<%=image_path[i]%> class="card-img-top" alt="Movie poster">
+                    <img src=<%=data.images_path[i*3+j]%> class="card-img-top" alt="Movie poster" style="width:216px; height:288px;">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">
-                            <%= movies[i]["name"] %>
+                            <%= data.movies_name[i*3+j] %>
                         </h5>
                         <p class="card-text">
-                            <p>Realisator : <%= movies[i]["realisator"]%></p>
-                            <p>Genres : <%= genres[i] %> </p>
-                            <p>Release year : <%= movies[i]["release_year"]%></p>
-                            <p>Running time : <%= movies[i]["running_time"]%> minutes.</p>
-                                <a href="/movies/<%=movies[i]["id_movie"]%>">
+                            <p>Realisator : <%= data.realisators[i*3+j]%></p>
+                            <p>Genres : <%= data.genres[i*3+j] %> </p>
+                            <p>Release year : <%= data.release_year[i*3+j]%></p>
+                            <p>Running time : <%= data.running_time[i*3+j]%> minutes.</p>
+                            <p>
+                                <a href="/movies/<%=data.movies_id[i*3+j]%>" > 
                                     <button class="btn btn-warning">Go to</button>
                                 </a>
-                            
-                        </ul>
+                            </p>
                         </p>
                     </div>
                 </div>
                 <!--END-->
-            </div>
+                <% }else{ %>
+                    <div class="card">
+
+                    </div>
+                <% }%>
+            <% } %>
+        </div>
         <% } %>
     </div>
     <%-include("../footer")-%>
 </body>
 
 </html>
+<%-include("../autocompletion")%>
+
+<script>
+    const data1 = "<%=data.release_year%>";
+    const data2 = "<%=data.movies_name%>";
+    const data3 = "<%=data.images_path%>";
+    const data4 = "<%=data.realisators%>";
+    const data5 = "<%=data.running_time%>";
+    const data6 = "<%=data.genres%>";
+    const data7 = "<%=data.movies_id%>";
+
+    const release_year = data1.split(",");
+    const movies_name = data2.split(",");
+    const images_path = data3.split(",");
+    const realisators = data4.split(",");
+    const running_time = data5.split(",");
+    const genres = data6.split(",");
+    const movies_id = data7.split(",");
+  
+    
+    const output = document.getElementById("output");
+    const button = document.getElementById("orderByYear");
+    const button2 = document.getElementById("latestAdditions")
+    const release_year_sorted = release_year.slice().sort();
+
+    const showLatest = () => {
+        let html = "";
+        let release_year_bis = release_year.slice();
+        for(i = release_year_sorted.length -1 ; i>-1; i-=1){
+            let index = release_year_bis.indexOf(release_year_sorted[i]);
+            html+= `
+            <div class ="card text-center text-white bg-dark pr-3 pl-3 mb-3">
+                    <div class="card-header">
+                    <img src=${images_path[index]} class="card-img-top" alt="Movie poster" style="width:216px; height:288px;">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            ${movies_name[index]}
+                        </h5>
+                        <p class="card-text">
+                            <p>Realisator : ${realisators[index]}</p>
+                            <p>Genres : ${genres[index]} </p>
+                            <p>Release year : ${release_year[index]}</p>
+                            <p>Running time : ${running_time[index]} minutes.</p>
+                            <p>
+                                <a href="/movies/${movies_id[index]}">
+                                    <button class="btn btn-warning">Go to</button>
+                                </a>
+                            </p>
+                        </p>
+                    </div>
+                </div>
+            `;
+            //to prevent reusing the same movie
+            release_year_bis[index] = -1;
+        }
+        output.innerHTML = html;
+    }
+
+    var baseHtml = output.outerHTML;
+
+    const backToNormal = () => {
+        output.innerHTML = baseHtml;
+    }
+
+    button.addEventListener("click", showLatest);
+    button2.addEventListener("click", backToNormal);
+</script>

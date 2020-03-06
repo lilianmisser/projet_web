@@ -1,6 +1,7 @@
 const user_model = require("../models/user_model");
 const jwt = require("jsonwebtoken");
 const Errors = require("../models/errors");
+const data_for_autocomplete = require("../functions/data_for_autocomplete");
 
 exports.get_register_page = (req, res) => {
     res.render('users/register', { error: undefined });
@@ -35,7 +36,7 @@ exports.get_login_page = (req, res) => {
 
 exports.login = async (req, res) => {
     if (!(req.body.username && req.body.pwd)) {
-        res.redirect("/users/login", { error: "please insert all informations" });
+        res.redirect("/users/login");
     }
     else {
         try{
