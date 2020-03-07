@@ -2,19 +2,25 @@
 <html>
 <head>
     <%-include("../header")-%>
+    <%-include("../navbar/visitor")-%>
     <title>Register page</title>
 </head>
 <body>
     <header>
-        <h1> Register page </h1>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Register page</h1>
+                <p class="lead">Here you can register and join the streamHelper community to improve everyone streaming experience.</p>
+            </div>
+        </div>
     </header>
     <% if(error){ %>
         <div class="alert alert-danger" role="alert">
             <%= error %>
         </div>
     <% } %>
+    <div class="container">
     <form method="POST" action="/users/register">
-        <a href ="/users/login">Login</a>
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
@@ -39,6 +45,8 @@
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
     </form>
+</div>
     <%-include("../footer")-%>
 </body>
 </html>
+<%-include("../autocompletion")%>

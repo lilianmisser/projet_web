@@ -5,20 +5,24 @@
     <title>Update movie</title>
 </head>
 <body>
-    <% if(isAdmin){ %>
+    <% if(isAdmin === 1){ %>
         <%-include("../navbar/admin")-%>
     <% }else{%>
         <%-include("../navbar/user") -%>
     <% } %>
     <header>
-        <h1> Update your profile </h1>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4"><%=desc%></h1>
+            </div>
+        </div>
     </header>
     <% if(error){ %>
         <div class="alert alert-danger" role="alert">
             <%= error %>
         </div>
     <% } %>
-    <a href ="/movies">Articles</a>
+    <div class="container">
     <form method="POST" action="/profile/<%=user_data[0]["id_user"]%>">
         <div class="form-group">
             <label for="firstname">Firstname</label>
@@ -34,6 +38,7 @@
         </div>
         <button type="submit" class="btn btn-default">Update</button>
     </form>
+    </div>
     <%-include("../footer")-%>
 </body>
 </html>

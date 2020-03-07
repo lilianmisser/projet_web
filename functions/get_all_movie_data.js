@@ -2,8 +2,7 @@ const movies_model = require("../models/movies_model");
 const get_genre = require("./get_genre");
 const get_image_path = require("./get_image_path");
 
-const get_all_movie_data = async () => {
-    let all_movies = await movies_model.load_all_movies();
+const get_all_movie_data = async (all_movies) => {
     let genres = await get_genre(all_movies);
     //I was not able to get multi dimensional array in the front side so i fetch my data in simple arrays;
     let images_path = [];

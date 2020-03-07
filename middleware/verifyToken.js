@@ -4,13 +4,18 @@ const verifyToken = (req, res, next) => {
     const cookies = req.cookies;
     if (cookies) {
         jwt.verify(cookies.jwt, process.env.SECRET_KEY, (err, user) => {
-            if (err) return res.render("users/login",{error : undefined});
-            req.user = user;
-            next();
-
+            if (err) {
+                req.user = {isAdmin : -1};
+                next();
+            }
+            else{
+                req.user = user;
+                next();
+            }
         });
     } else {
-        return res.render("users/login",{error : undefined});
+        req.user = {isAdmin : -1};
+        next();
     }
 };
 

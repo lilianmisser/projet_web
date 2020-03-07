@@ -36,9 +36,9 @@ const profile_model = {
         })
     },
 
-    delete_profile : async (username) => {
+    delete_profile : async (id_user) => {
         return new Promise((resolve,reject) => {
-            bdd.query("DELETE FROM users WHERE user.username = ?",[username],
+            bdd.query("DELETE FROM user WHERE user.id_user = ?",[id_user],
             (error,results) => {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
@@ -59,6 +59,20 @@ const profile_model = {
                 }
                 else{
                     resolve();
+                }
+            })
+        })
+    },
+
+    get_all_users : async () => {
+        return new Promise((resolve,reject) => {
+            bdd.query("SELECT id_user,username,firstname,lastname,mail FROM user ORDER BY username",
+            (error,results) => {
+                if(error){
+                    reject(Errors.DB_UNAVALAIBLE);
+                }
+                else{
+                    resolve(results);
                 }
             })
         })

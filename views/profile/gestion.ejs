@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%-include("../header")-%>
+    <title>Profile</title>
+</head>
+
+<body>
+    <%-include("../navbar/admin")-%>
+    <header>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Gestion page</h1>
+                <p class="lead">Admin you can update or delete profiles of the users classed by their username.</p>
+            </div>
+        </div>
+    </header>
+    <% if(users_data){ %>
+    <div class="container-fluid">
+        <table class="table striped">
+            <thead>
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Firstname</th>
+                    <th scope="col">Lastname</th>
+                    <th scope="col">Mail</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(i=0;i<users_data.length;i++){%>
+                <tr>
+                    <td>
+                        <%= users_data[i]["username"]%>
+                    </td>
+                    <td>
+                        <%= users_data[i]["firstname"] %>
+                    </td>
+                    <td>
+                        <%= users_data[i]["lastname"] %>
+                    </td>
+                    <td>
+                        <%= users_data[i]["mail"] %>
+                    </td>
+                    <td>
+                        <a href="/profile/update/<%=users_data[i]["id_user"]%>">
+                            <button class="btn btn-info">
+                                Update
+                            </button>
+                        </a>
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-danger" data-toggle="modal"
+                            data-target="#myModal<%=i%>">Delete</button>
+                        <!-- The Modal -->
+                        <div class="modal" id="myModal<%=i%>">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Delete Validation</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <!-- Modal body -->
+                                    <div class="modal-body">
+                                        Are you sure you want to delete <%=users_data[i]["username"]%>.
+                                    </div>
+
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                                        <a href="/profile/delete/<%=users_data[i]["id_user"]%>"><button type="button"
+                                                class="btn btn-danger">Delete</button></a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <% } %>
+</body>
+
+</html>

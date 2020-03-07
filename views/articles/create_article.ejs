@@ -5,26 +5,28 @@
     <title>Add Movie</title>
 </head>
 <body>
-    <% if(isAdmin){ %>
-        <%-include("../navbar/admin")-%>
-    <% }else{%>
-        <%-include("../navbar/user") -%>
-    <% } %>
+    <%-include("../navbar/admin")-%>
+
     <header>
-        <h1> Create an article </h1>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Create an article</h1>
+                <p class="lead">You can create here an article of a movie where the community can say his opinion and grade the movie !</p>
+            </div>
+        </div>
     </header>
+    
     <% if(error){ %>
         <div class="alert alert-danger" role="alert">
             <%= error %>
         </div>
     <% } %>
-    <a href ="/movies">Articles</a>
+    <div class="container">
     <form method="POST" enctype="multipart/form-data" action="/movies">
         <div class="form-group">
             <label for="movie_name">Movie name</label>
             <input type="text" class="form-control" id="movie_name" placeholder="Enter movie name" name="movie_name" required>
             <small class="form-text text-muted">Movie name can't have underscores inside.</small>
-        </div>
         </div>
         <div class="form-group">
             <label for="realisator">Realisator</label>
@@ -39,7 +41,7 @@
             <input type="text" class="form-control" id="running_time" placeholder="Enter running time" name="running_time" required  >
         </div>
         <div class="form-check">
-            <label for="genre">Genre</label>
+            <label for="genre">Genre(s)</label>
             <br>
         <% for(i=0;i<genres.length;i++){ %>
              <input class="form-check form-check-inline" type="checkbox" value="<%=genres[i].genre_name%>" id="genre" name="genre">
@@ -58,7 +60,8 @@
             <input type="file" class="form-control-file" id="movie_image" name="movie_image">
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
-    </form>
+        </form>
+    </div>
     <%-include("../footer")-%>
 </body>
 </html>

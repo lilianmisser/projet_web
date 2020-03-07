@@ -3,6 +3,7 @@ const Errors = require("../models/errors");
 const get_image_path = require("../functions/get_image_path");
 const get_genre = require("../functions/get_genre");
 const data_for_autocomplete = require("../functions/data_for_autocomplete");
+const get_all_movie_data = require("../functions/get_all_movie_data");
 
 exports.get_all = async (req,res) => {
     try{
@@ -44,6 +45,7 @@ exports.get_movies = async (req,res) => {
         try{
             let movies = await genre_model.get_movies_by_genre(id_genre);
             let genres = await get_genre(movies);
+            let data = await get_all_movie_data(movies);
             let auto_data = await data_for_autocomplete();
             let images_path = [];
             for(i=0;i<movies.length;i++){
@@ -51,10 +53,10 @@ exports.get_movies = async (req,res) => {
             };
 
             if (movies === undefined){
-                res.render("articles/articles",{ movies: [], isAdmin: req.user.isAdmin , genres : [] , desc : desc, image_path : images_path, auto_data});
+                res.render("articles/articles",{ movies: [], isAdmin: req.user.isAdmin , genres : [] , desc : desc, image_path : images_path,data, auto_data});
             }
             else{
-                res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc, image_path : images_path}, auto_data);
+                res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc, image_path : images_path, data, auto_data});
             }
 
         }

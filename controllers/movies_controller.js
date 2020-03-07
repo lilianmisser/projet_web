@@ -37,7 +37,8 @@ const upload = multer({
 
 exports.show_all = async (req, res) => {
     try {
-        let data = await get_all_movie_data();
+        let all_movies = await movies_model.load_all_movies();
+        let data = await get_all_movie_data(all_movies);
         let auto_data = await data_for_autocomplete();
         res.render('articles/articles', {
             isAdmin: req.user.isAdmin, desc: "Page showing all articles.", data , auto_data
@@ -138,7 +139,7 @@ exports.delete_by_id = async (req, res) => {
                             }
                         });
                     }
-                    res.redirect("/movies");
+                    res.redirect("/movies/");
                 }
                 catch (error) {
                     console.log(error);
@@ -186,7 +187,7 @@ exports.delete_comment = async (req, res) => {
     else {
         try {
             await comment_model.delete_comment(+req.params.id);
-            res.redirect("/movies");
+            res.redirect("/movies/");
         }
         catch{
             res.status(503);

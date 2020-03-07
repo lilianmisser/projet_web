@@ -1,8 +1,8 @@
 const isAdmin = (req, res, next) => {
-    if (req.user.isAdmin) {
+    if (req.user.isAdmin === 1) {
         next();
     } else {
-        res.status(403).render("accueil");
+        res.status(403).redirect("/home");
     }
 };
 

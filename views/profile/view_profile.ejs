@@ -3,18 +3,25 @@
 
 <head>
     <%-include("../header")-%>
-    <title>Articles</title>
+    <title>Profile</title>
 </head>
 
 <body>
-    <% if(isAdmin){ %>
+    <% if(isAdmin === 1){ %>
         <%-include("../navbar/admin")-%>
     <% }else{%>
         <%-include("../navbar/user") -%>
     <% } %>
-
+    <header>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Profile page</h1>
+                <p class="lead">Here you can see your informations and be able to modidy them.</p>
+            </div>
+        </div>
+    </header>
     <% if(user_data){ %>
-    <div class = "container-fluid">
+    <div class = "container">
         <table class="table striped">
             <tbody>
                 <tr>

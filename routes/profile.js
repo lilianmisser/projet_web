@@ -8,8 +8,10 @@ router.get("/", verifyToken, profile.get_profile_page);
 
 router.get("/update/:id",verifyToken, profile.get_update_page);
 
+router.get("/gestion",verifyToken,isAdmin, profile.get_users);
+
 router.post("/:id", verifyToken, profile.update);
 
-//router.get("/delete/:id", verifyToken, isAdmin, profile.delete_id);
+router.get("/delete/:id", verifyToken, isAdmin, profile.delete_by_id);
 
 module.exports = router;

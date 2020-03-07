@@ -2,30 +2,37 @@
 <html>
 <head>
     <%-include("../header")-%>
+    <%-include("../navbar/visitor")-%>
     <title>Login page</title>
 </head>
 <body>
     <header>
-        <h1> Login page </h1>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Login page</h1>
+                <p class="lead">You can log into your account to mark and comment all articles, if you don't have any you can register in the sign up page.</p>
+            </div>
+        </div>
     </header>
     <% if(error){ %>
         <div class="alert alert-danger" role="alert">
             <%= error %>
         </div>
     <% } %>
-    <form method="POST" action="/users/login">
-        <a href ="/users/register">Register</a>
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
-        </div>
-        </div>
-        <div class="form-group">
-            <label for="pwd">Password:</label>
-            <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd" required  >
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
+    <div class="container">
+        <form method="POST" action="/users/login">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd" required >
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+    </div>
     <%-include("../footer")-%>
 </body>
 </html>
+<%-include("../autocompletion")%>
