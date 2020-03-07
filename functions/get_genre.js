@@ -15,7 +15,7 @@ get_genre = async (tab) => {
                 string_genre = "";
             }
             else {
-                string_genre += genres_movie[j]["genre_name"] + ",";
+                string_genre += genres_movie[j]["genre_name"] + "/";
             }
         }
     }
