@@ -65,32 +65,44 @@
                 </div>
             </div>
             <% } %>
-
             <br>
-            <!-- Movie Card-->
-            <div class="card text-center" style="width: 18rem;">
-                <div class="card-img-top">
-                    <img src=<%=image_path%> class="img-responsive" alt="Movie poster">
-                </div>
-                <div class="card-body">
-                    <p class="card-title">
-                        <%= data_movie[0]["name"] %>
-                    </p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Realisator : <%= data_movie[0]["realisator"]%></li>
-                        <li class="list-group-item">Genres : <%= genres %> </li>
-                        <li class="list-group-item">Release year : <%= data_movie[0]["release_year"]%></li>
-                        <li class="list-group-item">Running time : <%= data_movie[0]["running_time"]%> minutes.</li>
-                    </ul>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <!-- Movie Card-->
+                        <div class="card text-center text-white bg-dark pr-3 pl-3 mb-3">
+                            <div class="card-img-top">
+                                <img src=<%=image_path%> class="img-responsive" alt="Movie poster" style="width:324px;height:432px">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%= data_movie[0]["name"] %>
+                                </h5>
+                                <p class="card-text">
+
+                                    <p>Realisator : <%= data_movie[0]["realisator"]%></p>
+                                    <p>Genres : <%= genres %> </p>
+                                    <p>Release year : <%= data_movie[0]["release_year"]%></p>
+                                    <p>Running time : <%= data_movie[0]["running_time"]%> minutes.</p>
+
+                                </p>
+                            </div>
+                        </div>
+                        <!-- END -->
+                    </div>
+                    <div class="col-lg-1"></div>
+                    <div class="col-lg-6 pr-3 pl-3">
+                        <div class="container p-3 my-3 bg-dark text-white">
+                            <h4> Synopsis : </h4>
+                            <p><%= data_movie[0]["synopsis"]%></p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- END -->
-            <div class="container-fluid">
-                Synopsis : <%= data_movie[0]["synopsis"]%>
-            </div>
+
         </div>
         <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
-        <% if (isAdmin !== -1){%>
+            <% if (isAdmin !== -1){%>
             <% if(canComment == true){ %>
             <form method="POST" action="/movies/comments/<%=data_movie[0]["id_movie"]%>">
                 <div class="form-group">
@@ -123,9 +135,10 @@
                 </form>
             </div>
             <% }else{ %>
-                <div class="alert alert-warning" role="alert">
-                    You must be logged to comment or to mark the movie, go and join our community to improve everyone streaming experience !
-                </div>
+            <div class="alert alert-warning" role="alert">
+                You must be logged to comment or to mark the movie, go and join our community to improve everyone
+                streaming experience !
+            </div>
             <% } %>
             <div class="container-fluid">
                 <% if(average_mark){ %>

@@ -24,7 +24,7 @@ const genre_model = {
                     reject(Errors.DB_UNAVALAIBLE);
                 }
                 else if(results[0] === undefined){
-                    resolve();
+                    resolve([]);
                 }
                 else{
                     resolve(results);

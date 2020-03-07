@@ -44,7 +44,6 @@ exports.get_movies = async (req,res) => {
         let desc = req.params.name + " movies," + desc_genre[0]["wording"];
         try{
             let movies = await genre_model.get_movies_by_genre(id_genre);
-            let genres = await get_genre(movies);
             let data = await get_all_movie_data(movies);
             let auto_data = await data_for_autocomplete();
             let images_path = [];
@@ -56,6 +55,7 @@ exports.get_movies = async (req,res) => {
                 res.render("articles/articles",{ movies: [], isAdmin: req.user.isAdmin , genres : [] , desc : desc, image_path : images_path,data, auto_data});
             }
             else{
+                let genres = await get_genre(movies);
                 res.render("articles/articles",{ movies: movies, isAdmin: req.user.isAdmin , genres : genres, desc : desc, image_path : images_path, data, auto_data});
             }
 
