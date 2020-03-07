@@ -56,7 +56,7 @@ const rating_model = {
                 }
                 else{
                     //This calcul permits us to have a round the float to the first decimal
-                    resolve( (Math.round((results[0]["sum"] / results[0]["count"])*10)) / 10 );
+                    resolve( { avg : (Math.round((results[0]["sum"] / results[0]["count"])*10)) / 10 , nb_mark : results[0]["count"]} );
                 }
             })
         })

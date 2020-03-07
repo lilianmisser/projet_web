@@ -3,6 +3,9 @@
 
 <head>
     <%-include("../header")-%>
+    <link rel = "stylesheet"
+    type = "text/css"
+    href = "../../css/star_rating.css" />
     <title>Articles</title>
 </head>
 
@@ -21,8 +24,15 @@
         </div>
     </div>
 
-    <button class="btn btn-info" id="orderByYear">Ordered by year</button>
-    <button class="btn btn-info" id="latestAdditions">Latest Additions</button>
+    <div class="container">
+        <button class="btn btn-primary" id="latestAdditions">Latest Additions</button>
+        <button class="btn btn-light" id="orderByYear">Ordered by year</button>
+        <button class="btn btn-dark" id="bestAVG">Best average</button>
+        <button class="btn btn-secondary" id="mostMarked">Most Marked</button>
+    </div>
+
+    <br>
+
     <div class="container" id="output">
         <%for(i=0; i<data.movies_name.length;i+=3){ %>
         <div class="row">
@@ -44,6 +54,9 @@
                             <p>Genres : <%= data.genres[i+j] %> </p>
                             <p>Release year : <%= data.release_year[i+j]%></p>
                             <p>Running time : <%= data.running_time[i+j]%> minutes.</p>
+                            <p>Average mark : <%= (data.average_rate[i+j] == -1) ? "No mark" : data.average_rate[i+j] %>
+                            </p>
+                            <p>Number of marks : <%=data.nb_mark[i+j] %> </p>
                             <p>
                                 <a href="/movies/<%=data.movies_id[i+j]%>">
                                     <button class="btn btn-warning">Go to</button>
@@ -70,6 +83,7 @@
 <%-include("../autocompletion")%>
 
 <script>
+    //Not the cleanest  way to get my data...
     const data1 = "<%=data.release_year%>";
     const data2 = "<%=data.movies_name%>";
     const data3 = "<%=data.images_path%>";
@@ -77,6 +91,8 @@
     const data5 = "<%=data.running_time%>";
     const data6 = "<%=data.genres%>";
     const data7 = "<%=data.movies_id%>";
+    const data8 = "<%=data.average_rate%>";
+    const data9 = "<%=data.nb_mark%>";
 
     const release_year = data1.split(",");
     const movies_name = data2.split(",");
@@ -85,21 +101,25 @@
     const running_time = data5.split(",");
     const genres = data6.split(",");
     const movies_id = data7.split(",");
+    const average_rate = data8.split(",");
+    const nb_mark = data9.split(",");
 
 
     const output = document.getElementById("output");
     const button = document.getElementById("orderByYear");
-    const button2 = document.getElementById("latestAdditions")
-    const release_year_sorted = release_year.slice().sort();
+    const button2 = document.getElementById("latestAdditions");
+    const button3 = document.getElementById("bestAVG");
+    const button4 = document.getElementById("mostMarked")
 
     const showLatest = () => {
+        const release_year_sorted = release_year.slice().sort();
         let html = "";
         let release_year_bis = release_year.slice();
         for (i = 0; i < release_year.length; i += 3) {
             html += '<div class="row">';
-            for(j=0;j<3;j++){
-                if(release_year_sorted[release_year.length-i-j-1] !== undefined){
-                    let index = release_year_bis.indexOf(release_year_sorted[release_year.length-i-j-1]);
+            for (j = 0; j < 3; j++) {
+                if (release_year_sorted[release_year.length - i - j - 1] !== undefined) {
+                    let index = release_year_bis.indexOf(release_year_sorted[release_year.length - i - j - 1]);
                     html += `
                     <div class="col">
                         <div class ="card text-center text-white bg-dark pr-3 pl-3 mb-3">
@@ -115,6 +135,8 @@
                                     <p>Genres : ${genres[index]} </p>
                                     <p>Release year : ${release_year[index]}</p>
                                     <p>Running time : ${running_time[index]} minutes.</p>
+                                    <p>Average mark : ${(average_rate[index] == -1) ? "No mark" : average_rate[index]} </p>
+                                    <p>Number of marks : ${nb_mark[index]} </p>
                                     <p>
                                         <a href="/movies/${movies_id[index]}">
                                             <button class="btn btn-warning">Go to</button>
@@ -125,13 +147,111 @@
                         </div>
                     </div>
                 `;
-                //to prevent reusing the same movie
-                release_year_bis[index] = -1;
+                    //to prevent reusing the same movie
+                    release_year_bis[index] = -1;
                 }
-                else{
+                else {
                     html += '<div class="col"> </div>';
                 }
-                
+
+            }
+            html += '</div>';
+        }
+        output.innerHTML = html;
+    }
+
+    const bestRates = () => {
+        const average_rate_sorted = average_rate.slice().sort();
+        let html = "";
+        let average_rate_bis = average_rate.slice();
+        for (i = 0; i < release_year.length; i += 3) {
+            html += '<div class="row">';
+            for (j = 0; j < 3; j++) {
+                if (average_rate_sorted[average_rate.length - i - j - 1] !== undefined) {
+                    let index = average_rate_bis.indexOf(average_rate_sorted[average_rate.length - i - j - 1]);
+                    html += `
+                    <div class="col">
+                        <div class ="card text-center text-white bg-dark pr-3 pl-3 mb-3">
+                            <div class="card-header">
+                            <img src=${images_path[index]} class="card-img-top" alt="Movie poster" style="width:216px; height:288px;">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    ${movies_name[index]}
+                                </h5>
+                                <p class="card-text">
+                                    <p>Realisator : ${realisators[index]}</p>
+                                    <p>Genres : ${genres[index]} </p>
+                                    <p>Release year : ${release_year[index]}</p>
+                                    <p>Running time : ${running_time[index]} minutes.</p>
+                                    <p>Average mark : ${(average_rate[index] == -1) ? "No mark" : average_rate[index]} </p>
+                                    <p>Number of marks : ${nb_mark[index]} </p>
+                                    <p>
+                                        <a href="/movies/${movies_id[index]}">
+                                            <button class="btn btn-warning">Go to</button>
+                                        </a>
+                                    </p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    //to prevent reusing the same movie
+                    average_rate_bis[index] = -2;
+                }
+                else {
+                    html += '<div class="col"> </div>';
+                }
+
+            }
+            html += '</div>';
+        }
+        output.innerHTML = html;
+    }
+
+    const mostMarked = () => {
+        const nb_mark_sorted = nb_mark.slice().sort();
+        let html = "";
+        let nb_mark_bis = nb_mark.slice();
+        for (i = 0; i < release_year.length; i += 3) {
+            html += '<div class="row">';
+            for (j = 0; j < 3; j++) {
+                if (nb_mark_sorted[nb_mark.length - i - j - 1] !== undefined) {
+                    let index = nb_mark_bis.indexOf(nb_mark_sorted[nb_mark.length - i - j - 1]);
+                    html += `
+                    <div class="col">
+                        <div class ="card text-center text-white bg-dark pr-3 pl-3 mb-3">
+                            <div class="card-header">
+                            <img src=${images_path[index]} class="card-img-top" alt="Movie poster" style="width:216px; height:288px;">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    ${movies_name[index]}
+                                </h5>
+                                <p class="card-text">
+                                    <p>Realisator : ${realisators[index]}</p>
+                                    <p>Genres : ${genres[index]} </p>
+                                    <p>Release year : ${release_year[index]}</p>
+                                    <p>Running time : ${running_time[index]} minutes.</p>
+                                    <p>Average mark : ${(average_rate[index] == -1) ? "No mark" : average_rate[index]} </p>
+                                    <p>Number of marks : ${nb_mark[index]} </p>
+                                    <p>
+                                        <a href="/movies/${movies_id[index]}">
+                                            <button class="btn btn-warning">Go to</button>
+                                        </a>
+                                    </p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    //to prevent reusing the same movie
+                    nb_mark_bis[index] = -1;
+                }
+                else {
+                    html += '<div class="col"> </div>';
+                }
+
             }
             html += '</div>';
         }
@@ -146,4 +266,6 @@
 
     button.addEventListener("click", showLatest);
     button2.addEventListener("click", backToNormal);
+    button3.addEventListener("click", bestRates);
+    button4.addEventListener("click", mostMarked);
 </script>
