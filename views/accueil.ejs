@@ -42,7 +42,7 @@
       <!-- Wrapper for slides -->
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src=<%= movies[0].image_path%> class="img-responsive" alt="Movie poster">
+          <img src=<%= movies[0].image_path%> class="img-responsive" alt="Movie poster" style="width:216px;height:288px">
           <div class="carousel-caption d-none d-md-block" style="color:black">
             <h5><%=movies[0].name%></h5>
             <p><%=movies[0].nb_mark%> users have rated this movie, Average rate : <%=movies[0].avg%> !</p>
@@ -51,7 +51,7 @@
         </div>
         <% for(i=1;i<nb_output;i++){%>
         <div class="carousel-item">
-          <img src=<%= movies[i].image_path%> class="img-responsive" alt="Movie poster">
+          <img src=<%= movies[i].image_path%> class="img-responsive" alt="Movie poster" style="width:216px;height:288px">
           <div class="carousel-caption d-none d-md-block" style="color:black">
             <h5><%=movies[i].name%></h5>
             <p><%=movies[i].nb_mark%> users have rated this movie with an average rate of <%=movies[i].avg%> !</p>
