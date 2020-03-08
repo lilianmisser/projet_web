@@ -6,7 +6,7 @@
     <title>Articles</title>
 </head>
 
-<body>
+<body style="height:100%;">
     <% if(isAdmin === 1){ %>
     <%-include("../navbar/admin")-%>
     <% }else if (isAdmin ===0){%>
@@ -39,23 +39,23 @@
                 <!-- Movie Card-->
                 <div class="card text-center text-white bg-dark pr-3 pl-3 mb-3">
                     <div class="card-header">
-                        <img src=<%=data.images_path[i+j]%> class="card-img-top" alt="Movie poster"
+                        <img src=<%=data.images_path[data.movies_name.length-i-j-1]%> class="card-img-top" alt="Movie poster"
                             style="width:216px; height:288px;">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">
-                            <%= data.movies_name[i+j] %>
+                            <%= data.movies_name[data.movies_name.length-i-j-1] %>
                         </h5>
                         <p class="card-text">
-                            <p>Realisator : <%= data.realisators[i+j]%></p>
-                            <p>Genres : <%= data.genres[i+j] %> </p>
-                            <p>Release year : <%= data.release_year[i+j]%></p>
-                            <p>Running time : <%= data.running_time[i+j]%> minutes.</p>
-                            <p>Average mark : <%= (data.average_rate[i+j] == -1) ? "No mark" : data.average_rate[i+j] %>
+                            <p>Realisator : <%= data.realisators[data.movies_name.length-i-j-1]%></p>
+                            <p>Genres : <%= data.genres[data.movies_name.length-i-j-1] %> </p>
+                            <p>Release year : <%= data.release_year[data.movies_name.length-i-j-1]%></p>
+                            <p>Running time : <%= data.running_time[data.movies_name.length-i-j-1]%> minutes.</p>
+                            <p>Average mark : <%= (data.average_rate[data.movies_name.length-i-j-1] == -1) ? "No mark" : data.average_rate[data.movies_name.length-i-j-1] %>
                             </p>
-                            <p>Number of marks : <%=data.nb_mark[i+j] %> </p>
+                            <p>Number of marks : <%=data.nb_mark[data.movies_name.length-i-j-1] %> </p>
                             <p>
-                                <a href="/movies/<%=data.movies_id[i+j]%>">
+                                <a href="/movies/<%=data.movies_id[data.movies_name.length-i-j-1]%>">
                                     <button class="btn btn-warning">Go to</button>
                                 </a>
                             </p>
