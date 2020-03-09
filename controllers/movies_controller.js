@@ -185,12 +185,23 @@ exports.delete_comment = async (req, res) => {
         res.redirect("/movies");
     }
     else {
-        try {
-            await comment_model.delete_comment(+req.params.id);
-            res.redirect("/movies/");
+        if(req.user.isAdmin>-1){
+            try {
+                await comment_model.delete_comment(+req.user.user_id,+req.params.id);
+                res.redirect("/movies");
+            }
+            catch(error){
+                switch(error){
+                    case Errors.DB_UNAVALAIBLE:
+                        res.status(503);
+                    case Errors.NO_ACCESS:
+                        res.redirect("/movies");
+                }
+                
+            }
         }
-        catch{
-            res.status(503);
+        else{
+            res.redirect("/movies");
         }
     }
 }

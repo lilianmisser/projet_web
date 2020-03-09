@@ -33,15 +33,26 @@ const comment_model = {
         })
     },
     
-    delete_comment: (id_comment) => {
+    delete_comment: (id_user,id_comment) => {
         return new Promise((resolve,reject) => {
-            bdd.query("DELETE FROM comment WHERE comment.id_comment = ?", id_comment,
+            bdd.query("SELECT id_comment,user.id_user FROM comment,user WHERE (user.id_user = ? AND user.isAdmin = 1) OR (comment.id_comment = ? AND comment.id_user = ?)",[id_user,id_comment,id_user],
             (error,results) => {
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }
+                else if(results[0] == []){
+                    reject(Errors.NO_ACCESS);
+                }
                 else{
-                    resolve();
+                    bdd.query("DELETE FROM comment WHERE comment.id_comment = ?", id_comment,
+                    (error,results) => {
+                        if(error){
+                            reject(Errors.DB_UNAVALAIBLE);
+                        }
+                        else{
+                            resolve();
+                        }
+                    })
                 }
             })
         })

@@ -173,7 +173,7 @@
                                 <%= usernames[i]%>
                             </td>
 
-                            <% if(username == usernames[i] || isAdmin) { %>
+                            <% if(username === usernames[i] || isAdmin === 1) { %>
                             <td>
                                 <a href="/movies/comments/delete/<%=comments[i]["id_comment"]%>">
                                     <button class="btn btn-danger">
