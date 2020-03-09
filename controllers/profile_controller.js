@@ -23,20 +23,31 @@ exports.get_update_page = async(req,res) => {
         res.redirect("/profile");
     }
     else{
-        try{
-            let user_data = await profile_model.get_all_data_profile(+req.params.id);
-            let auto_data = await data_for_autocomplete();
-            let desc = (req.user.user_id == req.params.id) ? "Update your profile" : `Update ${user_data[0]["username"]} profile`;
-            res.render("profile/update_profile", {user_data : user_data, isAdmin: req.user.isAdmin, error : undefined,desc : desc,auto_data});
-        }
-        catch(error){
-            switch(error){
-                case Errors.DB_UNAVALAIBLE:
-                    res.status(503);
-                case Errors.NO_USER_CORRESPONDANCE:
-                    res.redirect("/home");
+        if(req.user.isAdmin>-1){
+            if(req.user.user_id == req.params.id){
+                try{
+                    let user_data = await profile_model.get_all_data_profile(+req.params.id);
+                    let auto_data = await data_for_autocomplete();
+                    let desc = (req.user.user_id == req.params.id) ? "Update your profile" : `Update ${user_data[0]["username"]} profile`;
+                    res.render("profile/update_profile", {user_data : user_data, isAdmin: req.user.isAdmin, error : undefined,desc : desc,auto_data});
+                }
+                catch(error){
+                    switch(error){
+                        case Errors.DB_UNAVALAIBLE:
+                            res.status(503);
+                        case Errors.NO_USER_CORRESPONDANCE:
+                            res.redirect("/home");
+                    }
+                }
+            }
+            else{
+                res.redirect("/profile");
             }
         }
+        else{
+            res.redirect("/home");
+        }
+        
     }
 };
 
