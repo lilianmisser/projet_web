@@ -24,7 +24,7 @@ exports.get_update_page = async(req,res) => {
     }
     else{
         if(req.user.isAdmin>-1){
-            if(req.user.user_id == req.params.id){
+            if(req.user.user_id == req.params.id || req.user.isAdmin == 1){
                 try{
                     let user_data = await profile_model.get_all_data_profile(+req.params.id);
                     let auto_data = await data_for_autocomplete();
