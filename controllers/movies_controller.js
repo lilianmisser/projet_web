@@ -66,7 +66,8 @@ exports.create = async (req, res, next) => {
         if (err) {
             try {
                 let genres = await genre_model.get_all_genres();
-                res.render("articles/create_article", { error: err, isAdmin: req.user.isAdmin, genres: genres });
+                let auto_data = await data_for_autocomplete();
+                res.render("articles/create_article", { error: err, isAdmin: req.user.isAdmin, genres: genres, auto_data });
             }
             catch (error) {
                 res.status(503);

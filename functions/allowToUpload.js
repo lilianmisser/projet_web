@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const genre_model = require("../models/genre_model");
 const movies_model = require("../models/movies_model");
+const Errors = require('../models/errors');
 
 //We only have access to req.body and req.file when i use upload function with multer (multidata post) 
 //so i need to treat all the data here with a callback function retrieving errors or success
@@ -20,9 +21,15 @@ const allowToUpload = async (req, file, cb) => {
                     try {
                         let id_genres = [];
                         let length = (req.body.genre === undefined) ? 0 : req.body.genre.length;
-                        for (i = 0; i < length; i++) {
-                            id_genre = await genre_model.get_id_genre(req.body.genre[i]);
+                        if(! Array.isArray(req.body.genre)){
+                            let id_genre = await genre_model.get_id_genre(req.body.genre);
                             id_genres.push(id_genre);
+                        }
+                        else{
+                            for (i = 0; i < length; i++) {
+                                let id_genre = await genre_model.get_id_genre(req.body.genre[i]);
+                                id_genres.push(id_genre);
+                            }
                         }
                         try {
                             await movies_model.insert_movie(req.body.movie_name, req.body.realisator, +req.body.release_year, +req.body.running_time, req.body.synopsis);

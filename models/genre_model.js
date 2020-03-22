@@ -87,6 +87,7 @@ const genre_model = {
         return new Promise((resolve,reject) => {
             bdd.query("SELECT id_genre FROM genre WHERE genre.genre_name = ?",genre,
             (error,results) => {
+                console.log(genre);
                 if(error){
                     reject(Errors.DB_UNAVALAIBLE);
                 }
