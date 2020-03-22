@@ -21,7 +21,10 @@ const allowToUpload = async (req, file, cb) => {
                     try {
                         let id_genres = [];
                         let length = (req.body.genre === undefined) ? 0 : req.body.genre.length;
-                        if(! Array.isArray(req.body.genre)){
+                        if(length == 0){
+                            // do nothing
+                        }
+                        else if(! Array.isArray(req.body.genre)){
                             let id_genre = await genre_model.get_id_genre(req.body.genre);
                             id_genres.push(id_genre);
                         }
