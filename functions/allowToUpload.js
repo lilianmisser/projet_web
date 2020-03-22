@@ -20,7 +20,7 @@ const allowToUpload = async (req, file, cb) => {
                 if (req.body.movie_name.search("_") === -1) {
                     try {
                         let id_genres = [];
-                        let length = (req.body.genre === undefined) ? 0 : req.body.genre.length;
+                        let length = (req.body.genre === undefined || req.body.genre == "") ? 0 : req.body.genre.length;
                         if(length == 0){
                             // do nothing
                         }
